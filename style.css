@@ -61,6 +61,7 @@ body{
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 32px;
   padding: 0 32px;
   z-index: 500;
   /* Always dark enough for white nav text to read, on any section or photo —
@@ -133,13 +134,10 @@ body{
 /* Permanent scrim at the very top, independent of whichever photo is
    rotated in — guarantees the header stays legible even against a photo
    with bright sky right where the nav sits (e.g. the Valamo hero). */
-.hero-photo::after{
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0) 22%);
-  pointer-events: none;
-}
+/* Note: the extra top-darkening scrim that used to live here was removed —
+   it's redundant now that .site-header has its own permanent solid
+   background (see HEADER section), and it was unnecessarily darkening
+   photo content (like the Valamo cross) right below the nav bar. */
 
 /* Shared bottom row — panel and caption live here so they can never overlap.
    Flexbox does the collision-avoidance: caption shrinks/wraps below the
@@ -161,41 +159,45 @@ body{
   color: var(--white);
   flex: 0 1 auto;
   width: fit-content;
-  max-width: 420px;
+  /* Flat ceiling, not vw-scaled — the name's own font-size clamp already
+     bounds how wide the content can get, so this only needs to be larger
+     than that worst case (~454px including full padding) to guarantee
+     padding is never squeezed at any viewport width. */
+  max-width: 500px;
   min-width: 280px;
-  padding: 44px 40px 38px;
+  padding: clamp(36px, 3.4vw, 52px) clamp(32px, 3vw, 48px) clamp(30px, 2.6vw, 44px);
 }
 
 .hero-caption{
   flex: 0 1 auto;
-  max-width: 340px;
+  max-width: 90vw;
+  white-space: nowrap;
   margin-left: auto;
   text-align: right;
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 14px;
+  font-weight: 700;
   line-height: 1.5;
-  color: rgba(255,254,251,0.85);
-  text-shadow: 0 1px 4px rgba(0,0,0,0.5);
+  color: var(--white);
+  text-shadow: 0 1px 5px rgba(0,0,0,0.65);
   padding-bottom: 4px;
 }
 .hero-caption-mark{
   font-weight: 700;
   margin-right: 2px;
+  color: var(--white);
 }
-.hero-caption.case-cz .hero-caption-mark{ color: var(--red); }
-.hero-caption.case-fi .hero-caption-mark{ color: var(--ochre); }
-.hero-caption.case-am .hero-caption-mark{ color: #7C90A8; }
 
 @media (max-width: 900px){
   .hero-bottom-row{ padding: 0 16px 20px; }
-  .hero-caption{ max-width: 100%; text-align: left; margin-left: 0; font-size: 11px; }
+  .hero-caption{ max-width: 100%; white-space: normal; text-align: left; margin-left: 0; font-size: 12.5px; }
 }
 
 .hero-name{
   font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(34px, 4.6vw, 54px);
-  line-height: 1.0;
+  line-height: 1.15;
   text-transform: uppercase;
   letter-spacing: 0.01em;
   margin: 0 0 14px;
@@ -210,13 +212,60 @@ body{
   margin: 0 0 24px;
 }
 
-.hero-line{
+.hero-flow{
+  display: grid;
+  grid-template-columns: max-content 46px auto;
+  align-items: stretch;
+  column-gap: 0px;
+  margin: 0 0 22px;
+}
+
+.flow-labels{
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: fit-content;
+  padding-right: 6px;
+}
+.flow-input{
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
   font-family: var(--font-mono);
-  font-size: 15px;
-  line-height: 1.65;
-  color: rgba(255,254,251,0.92);
-  margin: 0 0 18px;
-  max-width: 30ch;
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--white);
+  white-space: nowrap;
+}
+
+.flow-arrows{
+  grid-column: 2;
+  align-self: stretch;
+  width: 46px;
+  height: 100%;
+}
+.flow-arrow-line{
+  stroke: var(--white);
+  stroke-width: 3;
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.flow-result{
+  grid-column: 3;
+  align-self: center;
+  padding-left: 1px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 19px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
 }
 
 .hero-cases{
@@ -225,6 +274,17 @@ body{
   flex-wrap: wrap;
   border-top: 1px solid rgba(255,254,251,0.3);
   padding-top: 10px;
+}
+
+.hero-method{
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255,254,251,0.3);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255,254,251,0.85);
 }
 .hero-cases span{
   font-family: var(--font-mono);
@@ -245,9 +305,9 @@ body{
 .hero-cases span.is-active{ color: var(--white); font-weight: 700; opacity: 1; }
 
 /* The active case also gets a footnote marker */
-.hero-cases span.is-active::after{
+.hero-cases span.is-active::before{
   content: "*";
-  margin-left: 3px;
+  margin-right: 4px;
   font-weight: 700;
 }
 
@@ -714,9 +774,12 @@ body{
 .contact-link:hover{ color: var(--ochre); border-color: var(--ochre); }
 
 /* ============================================================
-   MOBILE NAV
+   MOBILE NAV — breakpoint set wider than the other mobile rules below,
+   because the nav LINKS themselves need ~950px of room to fit without
+   crowding the brand logo; 900px left a squeeze zone between ~900-950px
+   where the full nav was forced to show but didn't actually fit.
    ============================================================ */
-@media (max-width: 900px){
+@media (max-width: 1024px){
   .main-nav{
     position: fixed;
     top: var(--nav-height);
@@ -734,8 +797,42 @@ body{
     border-bottom: 1px solid rgba(245,242,236,0.08);
   }
   .nav-toggle{ display: flex; }
+}
+
+@media (max-width: 900px){
   .hero-panel{
     padding: 32px 28px 30px;
   }
   .about{ padding-top: 130px; }
+  /* The horizontal SVG diagram needs a fixed-width arrow column that
+     doesn't suit narrow phones — hide the SVG and stack labels vertically
+     instead, with simple CSS down-arrows between them. */
+  .hero-flow{
+    grid-template-columns: 1fr;
+  }
+  .flow-labels{ grid-column: 1; }
+  .flow-input{
+    display: block;
+    text-align: left;
+    height: auto;
+    position: relative;
+    padding-bottom: 34px;
+    white-space: normal;
+  }
+  .flow-input::after{
+    content: "\2193"; /* ↓ */
+    position: absolute;
+    left: 46px;
+    bottom: 4px;
+    transform: translateX(-50%);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1;
+  }
+  .flow-arrows{ display: none; }
+  .flow-result{
+    grid-column: 1;
+    margin-top: 2px;
+  }
 }

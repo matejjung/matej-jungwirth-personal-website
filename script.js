@@ -1,20 +1,27 @@
 // Hero rotation: one of three case photos, chosen at random per page load.
-// To swap in real assets, just edit the `img` paths below.
+// `position` is the CSS background-position for that photo — it controls
+// which part of the image stays visible when "cover" has to crop aggressively
+// (e.g. tall narrow phone screens). Default is centered; Finland is anchored
+// to the top so the monastery's cross and dome are never cropped off,
+// regardless of viewport shape.
 const heroCases = [
   {
     key: 'cz',
     img: 'images/hero_CZ.jpg',
+    position: 'center',
     caption: 'Czech National Archive, Prague, Czech Republic. Photographed 2025'
   },
   {
     key: 'fi',
     img: 'images/hero_E.jpg',
+    position: 'center top',
     caption: 'New Valamo Monastery, Heinävesi, Finland. Photographed 2026'
   },
   {
     key: 'am',
     img: 'images/hero_NK.jpg',
-    caption: 'Togh, Nagorno-Karabakh/Armenia. Photographed 2014'
+    position: 'center',
+    caption: 'Togh, Nagorno-Karabakh. Photographed 2014'
   }
 ];
 
@@ -27,6 +34,7 @@ const heroCases = [
   if (heroPhoto) {
     heroPhoto.style.backgroundImage =
       `linear-gradient(15deg, rgba(28,27,24,0.35) 0%, rgba(28,27,24,0.0) 55%), url('${choice.img}')`;
+    heroPhoto.style.backgroundPosition = choice.position || 'center';
   }
   if (caption) {
     caption.classList.remove('case-cz','case-fi','case-am');
@@ -44,6 +52,7 @@ const heroCases = [
 const progressBar = document.getElementById('borderlineProgress');
 
 function onScroll(){
+  if (!progressBar) return;
   const scrollTop = window.scrollY;
   const docHeight = document.documentElement.scrollHeight - window.innerHeight;
   const pct = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
@@ -55,9 +64,11 @@ onScroll();
 // Mobile nav toggle
 const navToggle = document.getElementById('navToggle');
 const mainNav = document.querySelector('.main-nav');
-navToggle.addEventListener('click', () => {
-  mainNav.classList.toggle('is-open');
-});
+if (navToggle && mainNav) {
+  navToggle.addEventListener('click', () => {
+    mainNav.classList.toggle('is-open');
+  });
+}
 
 // Close mobile nav when a link is clicked
 document.querySelectorAll('.main-nav a').forEach(link => {
