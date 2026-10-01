@@ -1,26 +1,22 @@
 // Hero rotation: one of three case photos, chosen at random per page load.
-// `position` is the CSS background-position for that photo — it controls
-// which part of the image stays visible when "cover" has to crop aggressively
-// (e.g. tall narrow phone screens). Default is centered; Finland is anchored
-// to the top so the monastery's cross and dome are never cropped off,
-// regardless of viewport shape.
+// NOTE ON FRAMING: background-position is NOT set here any more. It lives in
+// style.css, keyed off the data-case attribute this script sets, so that a
+// media query can give each photo a different crop on phones. (Setting it
+// inline here would win over any stylesheet rule and make that impossible.)
 const heroCases = [
   {
     key: 'cz',
-    img: 'images/hero_CZ.jpg',
-    position: 'center',
+    img: 'images/hero-prague-archive.jpg',
     caption: 'Czech National Archive, Prague, Czech Republic. Photographed 2025'
   },
   {
     key: 'fi',
-    img: 'images/hero_E.jpg',
-    position: 'center top',
+    img: 'images/hero-valamo-monastery.jpg',
     caption: 'New Valamo Monastery, Heinävesi, Finland. Photographed 2026'
   },
   {
     key: 'am',
-    img: 'images/hero_NK.jpg',
-    position: 'center',
+    img: 'images/hero-togh-karabakh.jpg',
     caption: 'Togh, Nagorno-Karabakh. Photographed 2014'
   }
 ];
@@ -34,7 +30,8 @@ const heroCases = [
   if (heroPhoto) {
     heroPhoto.style.backgroundImage =
       `linear-gradient(15deg, rgba(28,27,24,0.35) 0%, rgba(28,27,24,0.0) 55%), url('${choice.img}')`;
-    heroPhoto.style.backgroundPosition = choice.position || 'center';
+    // Framing is handled by CSS — see .hero-photo[data-case="…"] in style.css
+    heroPhoto.dataset.case = choice.key;
   }
   if (caption) {
     caption.classList.remove('case-cz','case-fi','case-am');
@@ -76,3 +73,68 @@ document.querySelectorAll('.main-nav a').forEach(link => {
     mainNav.classList.remove('is-open');
   });
 });
+
+// In-page navigation.
+//
+// Rather than letting the browser follow the #fragment, this scrolls to the
+// target directly. Two reasons:
+//   1. It guarantees an instant jump regardless of any scroll-behavior value
+//      inherited or set elsewhere.
+//   2. Fragment navigation is blocked in some embedded/sandboxed contexts
+//      (the Claude preview pane, for one), where clicking an anchor is
+//      treated as leaving the page rather than moving within it.
+//
+// The URL is still updated so links remain shareable and the back button
+// works. Offset accounts for the fixed header, matching the scroll-margin-top
+// used in style.css.
+(function initInPageNav(){
+  function headerOffset(){
+    // Exactly the header's height — no extra gap. Any additional offset
+    // scrolls to a point ABOVE the section's top edge, which shows a strip
+    // of the previous section under the header. That's invisible where two
+    // sections share a background but obvious where it changes (Publications
+    // is dark, Engagement follows the deeper-paper Fellowships).
+    const header = document.getElementById('siteHeader');
+    return header ? header.offsetHeight : 72;
+  }
+
+  function jumpTo(hash, pushState){
+    const id = hash.slice(1);
+    // '#top' means the very top of the document.
+    const target = id === 'top' ? null : document.getElementById(id);
+    if (id !== 'top' && !target) return false;
+
+    const y = target
+      ? window.scrollY + target.getBoundingClientRect().top - headerOffset()
+      : 0;
+    // Ceil rather than floor: landing a fraction of a pixel short would
+    // leave a hairline of the previous section showing under the header.
+    window.scrollTo({ top: Math.max(0, Math.ceil(y)), behavior: 'auto' });
+
+    if (pushState && window.history && history.pushState) {
+      history.pushState(null, '', hash);
+    }
+    return true;
+  }
+
+  document.addEventListener('click', function(e){
+    const link = e.target.closest('a[href^="#"]');
+    if (!link) return;
+    const hash = link.getAttribute('href');
+    if (!hash || hash === '#') return;
+    if (jumpTo(hash, true)) e.preventDefault();
+  });
+
+  // Back/forward between sections.
+  window.addEventListener('popstate', function(){
+    if (location.hash) jumpTo(location.hash, false);
+  });
+
+  // A page opened directly at a #section should land there too — done after
+  // load so images have their final heights and the offset is correct.
+  if (location.hash) {
+    window.addEventListener('load', function(){
+      jumpTo(location.hash, false);
+    });
+  }
+})();

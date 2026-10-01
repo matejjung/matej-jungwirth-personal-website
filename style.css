@@ -6,17 +6,29 @@
   --paper: #F5F2EC;
   --paper-deep: #EAE5DA;
   --red: #9E2B25;
+  /* Same hue as --red, lifted for use on the dark bands. The base red only
+     reaches 2.32:1 against --ink; this reaches 4.01:1. Use it anywhere red
+     text sits on a dark background. */
+  --red-onlight: #D34C45;
   --coral: #F0A08E;
   --red-deep: #7C201B;
   --ochre: #C8862A;
   --slate: #3D4A5C;
   --white: #FFFEFB;
 
-  --font-display: "Jost", sans-serif;
+  /* Display face. Instrument Sans is a neo-grotesque: tighter and less wide
+     than the geometric Jost it replaces, so uppercase headings need their
+     tracking pulled in rather than opened out. Body stays Public Sans,
+     labels stay Space Mono. */
+  --font-display: "Instrument Sans", sans-serif;
   --font-body: "Public Sans", sans-serif;
   --font-mono: "Space Mono", monospace;
 
   --max-width: 1140px;
+  /* Single measure for running text. Every prose column on the site stops
+     here so section edges line up down the page. The page container
+     (--max-width) is far wider; that governs bands and grids, not text. */
+  --measure: 640px;
   --nav-height: 72px;
 }
 
@@ -26,7 +38,56 @@
   *{ animation-duration: 0.001ms !important; transition-duration: 0.001ms !important; }
 }
 
-html{ scroll-behavior: smooth; }
+/* No smooth scrolling on anchor jumps: clicking a nav item should land on
+   that section immediately rather than animating past everything between.
+   This property only affects scrolling triggered by links or script —
+   the visitor's own wheel/trackpad scrolling is unaffected, so scrolling
+   through the page continuously still works exactly as before. */
+html{ scroll-behavior: auto; }
+
+/* Anchor jumps land flush beneath the fixed header. No extra gap: anything
+   more scrolls above the section's top edge and shows a strip of the
+   previous section, which is conspicuous wherever the background changes.
+   Kept in step with headerOffset() in script.js, which handles nav clicks;
+   this is the fallback for direct #fragment loads and no-JS. */
+section[id], main[id]{
+  scroll-margin-top: var(--nav-height);
+}
+
+/* Each nav destination fills at least the screen below the header, so
+   jumping to a short section doesn't leave the next one showing as a strip
+   along the bottom. Sections taller than this are unaffected and simply
+   scroll as before.
+   svh, not vh: on mobile vh is measured against the viewport with browser
+   chrome hidden, which is taller than what is actually visible, so a vh
+   floor would still leave the next section peeking through.
+   box-sizing is border-box globally, so the section's own vertical padding
+   counts inside this height rather than adding to it. */
+section[id]{
+  min-height: calc(100svh - var(--nav-height));
+}
+@supports not (height: 100svh){
+  section[id]{ min-height: calc(100vh - var(--nav-height)); }
+}
+/* The hero sets its own full-viewport height and sits above the first
+   nav destination, so it is left out of the rule above. */
+
+/* No horizontal scrolling. On a phone even a few pixels of overflow lets the
+   whole page slide left and right as you scroll, which reads as the layout
+   being loose. Setting this on both elements matters: on iOS Safari,
+   overflow-x on body alone is ignored unless html carries it too.
+   overflow-x: clip rather than hidden — hidden on a root element turns the
+   other axis into a scroll container, which breaks position: sticky (the
+   About portrait) and scroll-margin-top on anchor jumps. */
+html, body{
+  max-width: 100%;
+  overflow-x: clip;
+}
+/* Fallback for browsers without `clip` (Safari before 16). `hidden` has the
+   sticky side effect noted above, so it is used only where clip is absent. */
+@supports not (overflow-x: clip){
+  html, body{ overflow-x: hidden; }
+}
 
 body{
   margin: 0;
@@ -44,7 +105,11 @@ body{
 
 .kicker{
   font-family: var(--font-mono);
-  font-size: 12px;
+  /* Bold, to match the kickers on dark backgrounds. Size is deliberately
+     lower than .kicker--onlight (18px): light-on-dark text renders
+     thinner, so the two only look equal at different nominal sizes. */
+  font-size: 16px;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.18em;
   color: var(--red);
@@ -60,7 +125,9 @@ body{
   height: var(--nav-height);
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* Left-aligned. With the brand mark gone the nav is the only item on the
+     bar at desktop width, so it starts at the header's left padding. */
+  justify-content: flex-start;
   gap: 32px;
   padding: 0 32px;
   z-index: 500;
@@ -72,22 +139,11 @@ body{
   box-shadow: 0 1px 0 rgba(255,255,255,0.06);
 }
 
-.brand{
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 22px;
-  letter-spacing: 0.04em;
-  color: var(--white);
-  text-decoration: none;
-  border: 2px solid var(--white);
-  padding: 2px 8px;
-}
-
-.main-nav{ display: flex; gap: 28px; }
+.main-nav{ display: flex; gap: 21px; }
 .main-nav a{
   font-family: var(--font-display);
   font-weight: 500;
-  font-size: 14px;
+  font-size: 13.5px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   text-decoration: none;
@@ -131,6 +187,13 @@ body{
   background-size: cover;
   background-position: center;
 }
+
+/* Per-photo framing. Set here rather than inline in script.js so the phone
+   breakpoint further down can re-crop each photo independently.
+   script.js sets data-case; these rules do the rest. */
+.hero-photo[data-case="cz"]{ background-position: center; }
+.hero-photo[data-case="fi"]{ background-position: center top; }
+.hero-photo[data-case="am"]{ background-position: center; }
 /* Permanent scrim at the very top, independent of whichever photo is
    rotated in — guarantees the header stays legible even against a photo
    with bright sky right where the nav sits (e.g. the Valamo hero). */
@@ -159,23 +222,32 @@ body{
   color: var(--white);
   flex: 0 1 auto;
   width: fit-content;
-  /* Flat ceiling, not vw-scaled — the name's own font-size clamp already
-     bounds how wide the content can get, so this only needs to be larger
-     than that worst case (~454px including full padding) to guarantee
-     padding is never squeezed at any viewport width. */
-  max-width: 500px;
+  /* Ceiling sized by the CASES ROW, not the name. At 13.5px with 20px
+     separators the three case labels need ~526px, plus up to ~87px of
+     padding. A 500px cap (sized only for the name) made the row wrap on
+     wide screens while the smaller clamped type below 900px still fit on
+     one line — wrapping as the viewport got WIDER, which is backwards. */
+  max-width: 640px;
   min-width: 280px;
-  padding: clamp(36px, 3.4vw, 52px) clamp(32px, 3vw, 48px) clamp(30px, 2.6vw, 44px);
+  /* Tighter top and bottom than the sides: the panel reads as a block of
+     information, and generous vertical padding made it float. Horizontal
+     values are unchanged. */
+  padding: clamp(26px, 2.4vw, 36px) clamp(32px, 3vw, 48px) clamp(24px, 2vw, 32px);
 }
 
 .hero-caption{
   flex: 0 1 auto;
   max-width: 90vw;
   white-space: nowrap;
-  margin-left: auto;
-  text-align: right;
+  /* No margin-left:auto here on purpose. Sharing a line with the panel,
+     justify-content:space-between already pushes this to the right edge.
+     Once the row wraps and the caption is alone on the second line,
+     space-between leaves it at the start — so it sits bottom-left under
+     the panel instead of stranded on the right. An auto margin would
+     force it right in both cases. */
+  text-align: left;
   font-family: var(--font-mono);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 700;
   line-height: 1.5;
   color: var(--white);
@@ -190,83 +262,34 @@ body{
 
 @media (max-width: 900px){
   .hero-bottom-row{ padding: 0 16px 20px; }
-  .hero-caption{ max-width: 100%; white-space: normal; text-align: left; margin-left: 0; font-size: 12.5px; }
+  .hero-caption{ max-width: 100%; white-space: normal; font-size: 12px; }
 }
 
 .hero-name{
   font-family: var(--font-display);
   font-weight: 700;
   font-size: clamp(34px, 4.6vw, 54px);
-  line-height: 1.15;
+  line-height: 1.12;
   text-transform: uppercase;
-  letter-spacing: 0.01em;
+  letter-spacing: -0.018em;
   margin: 0 0 14px;
 }
 
 .hero-subtitle{
   font-family: var(--font-mono);
-  font-size: 13px;
-  letter-spacing: 0.1em;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1.55;
   text-transform: uppercase;
-  color: rgba(255,254,251,0.8);
+  color: rgba(255,254,251,0.92);
   margin: 0 0 24px;
 }
 
-.hero-flow{
-  display: grid;
-  grid-template-columns: max-content 46px auto;
-  align-items: stretch;
-  column-gap: 0px;
-  margin: 0 0 22px;
-}
-
-.flow-labels{
-  grid-column: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  width: fit-content;
-  padding-right: 6px;
-}
-.flow-input{
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  text-align: left;
-  font-family: var(--font-mono);
-  font-size: 13.5px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: var(--white);
-  white-space: nowrap;
-}
-
-.flow-arrows{
-  grid-column: 2;
-  align-self: stretch;
-  width: 46px;
-  height: 100%;
-}
-.flow-arrow-line{
-  stroke: var(--white);
-  stroke-width: 3;
-  fill: none;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-}
-
-.flow-result{
-  grid-column: 3;
-  align-self: center;
-  padding-left: 1px;
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 19px;
-  line-height: 1.2;
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
-}
+/* The territorial mourning flow diagram was styled here (.hero-flow,
+   .flow-labels, .flow-input, .flow-arrows, .flow-arrow-line, .flow-result).
+   Removed Sept 2026 along with its markup; both are saved in
+   site/_archive-territorial-mourning-diagram.html for possible reuse. */
 
 .hero-cases{
   display: flex;
@@ -281,16 +304,21 @@ body{
   padding-top: 10px;
   border-top: 1px solid rgba(255,254,251,0.3);
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 12px;
+  font-weight: 700;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: rgba(255,254,251,0.85);
+  color: rgba(255,254,251,0.95);
 }
 .hero-cases span{
   font-family: var(--font-mono);
-  font-size: 12.5px;
+  font-size: 13.5px;
+  font-weight: 500;
   letter-spacing: 0.06em;
-  color: rgba(255,254,251,0.7);
+  /* Was 0.7 alpha, which fell away against the red. The active case still
+     separates itself by weight 700, the white, and its asterisk, so the
+     inactive ones don't need to be faded to stay secondary. */
+  color: rgba(255,254,251,0.88);
   padding-right: 20px;
   margin-right: 20px;
   border-right: 1px solid rgba(255,254,251,0.3);
@@ -318,16 +346,28 @@ body{
 /* ============================================================
    ABOUT — headshot offset against grid
    ============================================================ */
-.about{ padding: 180px 0 110px; }
+.about{ padding: 150px 0 55px; }
 
 .about-grid{
   display: grid;
   grid-template-columns: 380px 1fr;
-  gap: 72px;
+  column-gap: 72px;
+  row-gap: 0;
   align-items: start;
 }
 
-.about-photo-wrap{ position: relative; }
+/* Explicit placement: the kicker spans the full width on its own row,
+   the photo occupies column 1 spanning both text rows, and the two text
+   blocks stack in column 2, reading as one continuous column. */
+.about-kicker{ grid-column: 1 / -1; grid-row: 1; margin-bottom: 28px; }
+.about-photo-wrap{ grid-column: 1; grid-row: 2 / 4; }
+.about-text-intro{ grid-column: 2; grid-row: 2; }
+.about-text-rest{ grid-column: 2; grid-row: 3; }
+
+.about-photo-wrap{
+  position: sticky;
+  top: calc(var(--nav-height) + 40px);
+}
 .about-photo{
   width: 100%;
   display: block;
@@ -342,44 +382,60 @@ body{
   z-index: 1;
 }
 
-.about-text h2{
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: clamp(30px, 3.6vw, 44px);
-  line-height: 1.12;
-  margin: 0 0 26px;
-}
 .about-text p{
-  font-size: 17px;
+  font-size: 16px;
   line-height: 1.75;
   color: #3E3C36;
   margin: 0 0 20px;
-  max-width: 62ch;
+  max-width: var(--measure);
 }
 .about-text strong{ color: var(--red); font-weight: 600; }
 .about-text em{ font-style: italic; }
+.about-text a{
+  color: var(--red);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(158,43,37,0.4);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.about-text a:hover{
+  color: var(--red-deep);
+  border-bottom-color: var(--red-deep);
+}
 
 @media (max-width: 900px){
   .about-grid{ grid-template-columns: 1fr; gap: 48px; }
-  .about-photo-wrap{ max-width: 340px; }
+  .about-photo-wrap{ max-width: 340px; position: relative; top: auto; margin: 0 auto; justify-self: center; }
+  /* Single column now, so grid-column/row placement no longer applies —
+     reorder instead: kicker, opening two paragraphs, then photo, then
+     the rest. */
+  .about-kicker{ grid-column: 1; grid-row: auto; order: 0; margin-bottom: 0; }
+  .about-photo-wrap{ grid-column: 1; grid-row: auto; order: 2; }
+  .about-text-intro{ grid-column: 1; grid-row: auto; order: 1; }
+  .about-text-rest{ grid-column: 1; grid-row: auto; order: 3; }
 }
 
 /* ============================================================
    GUIDEPOSTS — geometric color-blocked grid
    ============================================================ */
-.guideposts{ padding: 0 0 130px; }
+/* Symmetrical padding so this band reads as its own block rather than as a
+   footer to About. Previously it had no top padding at all, so the only
+   space above the tiles was About's 55px bottom padding, while below them
+   sat 65px — which made them look attached to the section above. */
+.guideposts{ padding: 65px 0; }
 
 .guidepost-grid{
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  grid-auto-rows: minmax(210px, auto);
+  grid-auto-rows: minmax(130px, auto);
   gap: 4px;
 }
 
 .guidepost{
+  position: relative;
   display: flex;
   flex-direction: column;
-  padding: 30px 28px 26px;
+  justify-content: space-between;
+  padding: 26px 26px 46px;
   text-decoration: none;
   color: var(--white);
   transition: transform 0.2s ease, filter 0.2s ease;
@@ -387,34 +443,47 @@ body{
 .guidepost:hover{ transform: translateY(-4px); filter: brightness(1.06); }
 
 .guidepost--tall{ grid-row: span 2; }
+/* With the Dossier tile hidden (Sept 2026), only 3 tiles remain beside the
+   tall one instead of 4 — which would leave one grid cell empty. This
+   makes the last of those tiles span the remaining width so nothing looks
+   missing. Self-healing: if Dossier comes back as a 5th tile, this tile
+   is no longer :last-child and the rule stops applying on its own —
+   remove this comment (but the rule itself is harmless to leave). */
+.guidepost-grid > .guidepost:nth-child(4):last-child{ grid-column: span 2; }
+/* Tall tile: number stays pinned top-left like every other tile, but the
+   title is vertically centered in the remaining space rather than sitting
+   at the bottom of a much taller box. */
+.guidepost--tall{ position: relative; justify-content: center; }
+.guidepost--tall h3{ margin: 0; }
 
 .guidepost--red{ background: var(--red); }
 .guidepost--slate{ background: var(--slate); }
 .guidepost--ochre{ background: var(--ochre); color: var(--ink); }
 .guidepost--ochre .guidepost-label{ opacity: 0.9; }
-.guidepost--ink{ background: var(--ink); }
-.guidepost--warm{ background: var(--red-deep); }
-.guidepost--paper{
+.guidepost--ink{ background: var(--ink); }.guidepost--paper{
   background: var(--paper-deep);
   color: var(--ink);
   border: 1px solid #D6CFC0;
 }
 
 .guidepost-label{
+  position: absolute;
+  bottom: 22px;
+  right: 26px;
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.12em;
   opacity: 0.65;
-  margin: 0 0 auto;
+  margin: 0;
 }
 
 .guidepost h3{
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 24px;
+  font-size: 20px;
   text-transform: uppercase;
   letter-spacing: 0.02em;
-  margin: 18px 0 10px;
+  margin: 18px 0 0;
 }
 
 .guidepost p:not(.guidepost-label){
@@ -424,20 +493,379 @@ body{
   margin: 0 0 18px;
 }
 
-.guidepost-cta{
+.guidepost-meta{
   font-family: var(--font-mono);
-  font-size: 12.5px;
-  letter-spacing: 0.06em;
-  margin-top: auto;
-  opacity: 0.92;
+  font-size: 12px;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  opacity: 0.78;
+  margin: 8px 0 0;
 }
+/* Keep the number pinned top and the title+meta grouped at the bottom,
+   now that tiles have three children rather than two. */
+/* Number now sits bottom-right, so title + meta start at the top of the tile. */
+.guidepost{ justify-content: flex-start; }
+.guidepost h3{ margin-top: 0; }
 
-@media (max-width: 860px){
+/* Exceptions: the tall tile centers its title on the tile's own midpoint so it
+   lines up with the divider between the tiles to its right; the dossier tile
+   centers so its title sits on the same line as Teaching Experience's. */
+.guidepost--tall{ justify-content: center; }
+/* The title+subheader group is centered on the tile midpoint. The title keeps
+   its original centered position; the subheader flows beneath at the same 8px
+   gap the other tiles use. Negative margin offsets the subheader's height so
+   the TITLE (not the group) stays on the exact midpoint as before. */
+.guidepost--tall h3{ margin: 0; }
+.guidepost-tall-center{
+  position: absolute;
+  top: 50%;
+  left: 26px;
+  right: 26px;
+  transform: translateY(-50%);
+}
+.guidepost-tall-center .guidepost-meta{ margin: 8px 0 0; }@media (max-width: 860px){
   .guidepost-grid{ grid-template-columns: 1fr 1fr; }
-  .guidepost--tall{ grid-row: span 1; }
+  /* Dissertation takes the full top row instead of a single cell. With it out
+     of the way, the remaining 4 tiles (Publications, Fellowships, Teaching,
+     Dossier) divide evenly into two neat rows of two — no tile left stranded
+     alone on its own row with an empty gap beside it. */
+  .guidepost--tall{ grid-row: span 1; grid-column: span 2; justify-content: space-between; }
+  .guidepost--tall h3{ margin: 18px 0 0; flex: none; display: block; }
+
+  /* Grid rows still size independently by default, so a tile with a longer
+     meta line (e.g. Teaching's course title) makes its whole row taller than
+     the row above it. A shared floor keeps all four the same height instead;
+     the value is sized for the longest current caption (Teaching's, ~5 lines
+     at this width) — revisit if any of these captions get substantially
+     longer or shorter. */
+  .guidepost-grid > .guidepost:not(.guidepost--tall){ min-height: 300px; }
 }
 @media (max-width: 560px){
   .guidepost-grid{ grid-template-columns: 1fr; }
+  /* The 860px block above makes the Dissertation tile span two columns.
+     That rule is still in force here, so without this reset it demands a
+     second column the single-column grid doesn't have — the browser adds an
+     implicit one and the whole grid runs past the right edge. */
+  .guidepost--tall{ grid-column: auto; }
+  /* Same guard for the "last tile fills the empty cell" rule in the 900px
+     block. It doesn't match today (there are five tiles, so the fourth
+     isn't last), but it would overflow the same way if the count ever
+     dropped back to four. */
+  .guidepost-grid > .guidepost:nth-child(4):last-child{ grid-column: auto; }
+}
+
+/* ============================================================
+   TERRITORIAL MOURNING DIAGRAM
+   Three inputs converging on the concept. Lives in the dissertation
+   section, between the concept paragraph and the methods paragraph.
+   Was originally in the hero panel, where it was set in white on red;
+   on paper the labels take --ink and the arrows --red.
+   ============================================================ */
+.concept-flow{
+  display: grid;
+  grid-template-columns: max-content 46px auto;
+  align-items: stretch;
+  column-gap: 0;
+  /* Left-aligned with the prose above and below, so the diagram shares the
+     page's single left edge rather than sliding about as the viewport
+     resizes. The frame, not the position, is what marks it as a figure. */
+  width: fit-content;
+  /* 2px: enough to hold its own as a frame now that it is no longer set
+     apart by being centred. Same colour as the dividers in the Awards and
+     Teaching lists. Generous padding keeps the rule clear of the labels
+     and the arrowheads. */
+  border: 2px solid #D6CFC0;
+  padding: 30px 40px;
+  margin: 12px 0 44px;
+}
+.concept-labels{
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: fit-content;
+  padding-right: 6px;
+}
+.concept-input{
+  /* The arrow paths are drawn against three 28px rows; change this height
+     and the SVG coordinates need changing to match. */
+  height: 28px;
+  display: flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.concept-arrows{
+  grid-column: 2;
+  align-self: stretch;
+  width: 46px;
+  height: 100%;
+}
+.concept-arrow-line{
+  stroke: var(--red);
+  stroke-width: 3;
+  fill: none;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.concept-result{
+  grid-column: 3;
+  align-self: center;
+  padding-left: 1px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 1.2;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+  color: var(--red);
+}
+/* The three-column layout needs ~375px and can't usefully collapse: stacked
+   vertically it was taller than it was worth and the arrows no longer lined
+   up with anything. Below this width the lede above carries the argument on
+   its own, and the aria-label keeps it available to screen readers. */
+@media (max-width: 620px){
+  .concept-flow{ display: none; }
+}
+
+/* ============================================================
+   CASE MAP BANDS — text panel above, full-width historical image below
+   ============================================================ */
+.case-map-block{ margin: 0 0 64px; }
+
+/* The band takes the natural proportions of whatever image it holds —
+   a wide map, a squarer one, or a photograph — so nothing is cropped
+   and nothing floats in dead space. */
+.case-map{
+  position: relative;
+  width: 100%;
+  background-color: #EDE7D8;
+  line-height: 0;
+  /* Frame binds image and panel into a single object. */
+  border: 2px solid var(--ink);
+}
+/* Own positioning context, so the credit line anchors to the bottom of the
+   photograph rather than the bottom of the whole block. */
+.case-map-figure{ line-height: 0; }
+
+.case-map-img{
+  display: block;
+  width: 100%;
+  height: auto;
+}
+/* Panel sits ABOVE the image: the text is read first, then the picture
+   illustrates it. Panel and figure are simply stacked in document order,
+   so reading order matches visual order for screen readers too. */
+.case-map-row{
+  position: static;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
+  width: 100%;
+  padding: 0;
+  line-height: 1.5;
+}
+
+.case-panel{
+  background: var(--red);
+  color: var(--white);
+  /* Floor the width: a squeezed panel wraps text into many short lines and
+     grows tall. Cap the height too, so it can never exceed its own band. */
+  width: 100%;
+  padding: 24px 28px 24px;
+}
+.case-panel--ochre{ background: var(--ochre); color: var(--ink); }
+.case-panel--slate{ background: var(--slate); }
+
+/* Sits BELOW the case name as a subheading, so it takes the space that
+   used to separate the name from the body text. */
+.case-panel-eyebrow{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.85;
+  margin: 0 0 26px;
+}
+.case-panel h3{
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 28px;
+  text-transform: uppercase;
+  line-height: 1.12;
+  letter-spacing: -0.012em;
+  /* Tight to the eyebrow beneath it — the two read as one heading unit. */
+  margin: 0 0 6px;
+}
+/* No measure cap here, unlike every other prose column. The case panel is a
+   coloured band and the text is meant to fill it — capping the text left a
+   large empty area of red or slate to the right of each paragraph. */
+.case-panel p{ font-size: 14.5px; line-height: 1.65; margin: 0; }
+
+/* Links inside a case panel. The panels come in three fills — red, ochre
+   and slate — so a link takes the panel's own text colour and is marked by
+   an underline rather than a colour of its own, which would have to be
+   legible against all three. */
+.case-panel a{
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  transition: opacity 0.2s ease;
+}
+.case-panel a:hover{ opacity: 0.72; }
+
+/* Asterisk sits on the panel fill, so it takes the panel's text colour. */
+.case-map-mark{ color: inherit; opacity: 0.9; }
+
+/* The 1938 map is pale in its lower-right corner, so white type disappears
+   there; this variant sets the credit in ink with no shadow. */
+/* Image credit sits on the paper below the framed block. */
+.case-credit{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.55;
+  color: var(--ink);
+  opacity: 0.6;
+  margin: 12px 0 0;
+}
+
+/* Methods line sits inside the panel, identical to the case description. */
+.case-panel .case-methods{
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: inherit;
+  max-width: 100%;
+  /* One line-height (14.5px x 1.65): a clear break without a full empty line. */
+  margin: 23.9px 0 0;
+}
+
+/* ============================================================
+   FELLOWSHIPS & AWARDS
+   ============================================================ */
+.fellowships{ padding: 55px 0; background: var(--paper-deep); }
+.fellowships .kicker{ margin-bottom: 32px; }
+
+.fellowship-list{ list-style: none; margin: 0; padding: 0; max-width: var(--measure); }
+
+/* Subheading dividing the section into Fellowships & Grants (funding)
+   and Awards & Prizes (competitive honours). Sized below .section-title
+   but above the list items, so it groups without competing with the
+   section kicker. */
+.fellowship-item{
+  display: grid;
+  grid-template-columns: 1fr 148px;
+  gap: 24px;
+  align-items: baseline;
+  padding: 24px 0;
+  border-top: 1px solid #D6CFC0;
+}
+.fellowship-item:last-child{ border-bottom: 1px solid #D6CFC0; }
+
+.fellowship-year{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--red);
+  font-weight: 700;
+  text-align: right;
+}
+.fellowship-item h3{
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  color: var(--ink);
+  margin: 0;
+  line-height: 1.4;
+}
+/* Secondary descriptive text uses the body font, matching .engagement-gloss
+   and .case-methods. Without this it would inherit the display font from
+   its parent h3, which made this section read differently from every other
+   list on the page. */
+.fellowship-item h3 .fellowship-org{
+  font-family: var(--font-body);
+  font-weight: 400;
+  font-size: 14.5px;
+  color: #5A5648;
+}
+
+@media (max-width: 560px){
+  .fellowship-item{ grid-template-columns: 1fr; gap: 6px; }
+  .fellowship-year{ text-align: left; }
+}
+
+/* ============================================================
+   DOSSIER
+   ============================================================ */
+.dossier{ padding: 55px 0; background: var(--paper-deep); }
+
+.dossier-grid{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 4px;
+}
+.dossier-item{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 130px;
+  padding: 26px 24px;
+  background: var(--white);
+  border: 1.5px solid var(--ink);
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.dossier-item:hover{ transform: translateY(-3px); background: var(--paper); }
+
+.dossier-item h3{
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 18px;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0 0 16px;
+  line-height: 1.25;
+}
+.dossier-cta{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--red);
+}
+
+/* Marks a tile whose file hasn't been uploaded yet — same layout, quieter
+   color so it doesn't read as a live, clickable document. */
+.dossier-cta--pending{ color: #9A9484; }
+
+/* Pending tiles are <div>s, not links. Suppress the hover lift so they
+   don't invite a click that goes nowhere. Placed after the base
+   .dossier-item:hover rule so it wins the cascade. */
+.dossier-item--pending{ cursor: default; }
+.dossier-item--pending:hover{ transform: none; background: var(--white); }
+
+/* Download All sits apart from the individual documents — inverted color
+   to read as the "take everything" action, not just another file.
+   Comes after the base h3/cta rules above so its white text wins. */
+.dossier-item--all{
+  background: var(--ink);
+  border-color: var(--ink);
+}
+.dossier-item--all h3{ color: var(--white); }
+.dossier-item--all .dossier-cta{ color: var(--white); }
+.dossier-item--all:hover{ background: #2E2C27; }
+
+@media (max-width: 860px){
+  .dossier-grid{ grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 520px){
+  .dossier-grid{ grid-template-columns: 1fr; }
 }
 
 /* ============================================================
@@ -447,28 +875,7 @@ body{
   background: var(--ink);
   padding: 44px 32px 40px;
   text-align: center;
-}
-.footer-links{
-  display: flex;
-  justify-content: center;
-  gap: 28px;
-  flex-wrap: wrap;
-  margin-bottom: 22px;
-}
-.footer-links a{
-  font-family: var(--font-display);
-  font-weight: 500;
-  font-size: 13.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--white);
-  text-decoration: none;
-  border-bottom: 2px solid var(--red);
-  padding-bottom: 3px;
-  transition: border-color 0.2s ease, color 0.2s ease;
-}
-.footer-links a:hover{ color: var(--ochre); border-color: var(--ochre); }
-.site-footer p{
+}.site-footer p{
   font-family: var(--font-mono);
   font-size: 12px;
   color: rgba(245,242,236,0.5);
@@ -478,34 +885,109 @@ body{
 /* ============================================================
    SHARED SECTION TYPOGRAPHY
    ============================================================ */
-.kicker--onlight{ color: var(--ochre); }
+/* Light-on-dark text is thinned by subpixel antialiasing, rendering
+   visibly smaller than the same size set dark-on-light. Nudge the size
+   and disable the thinning so kickers match across backgrounds. */
+.kicker--onlight{
+  /* A lightened version of --red rather than a different colour: the brand
+     red (#9E2B25) gives only 2.32:1 against the near-black background, well
+     under the bar, so it had been set in ochre. This keeps the same hue and
+     reaches 4.01:1. At 19px bold it counts as large-scale text, where the
+     requirement is 3:1 — so it clears with margin.
+     The 19px also does the job the old 18px did: light-on-dark text renders
+     visibly thinner, so it needs to be set slightly larger than the 16px
+     used on light backgrounds to look the same size. */
+  color: var(--red-onlight);
+  /* 19px on anything from ~414px up; below that it scales down so the
+     nowrap below can't push the text past the section padding.
+     "ACADEMIC PUBLICATIONS" runs ~311px at 19px, and a 375px viewport only
+     leaves 311px between the 32px paddings — no margin at all. */
+  font-size: clamp(15px, 4.6vw, 19px);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Keeps "Academic Publications" on one line. At 19px mono with this
+     letter-spacing the string runs ~310px, which fits every viewport down
+     to about 375px; below that the size clamp further down brings it in. */
+  white-space: nowrap;
+}
 
 .section-title{
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: clamp(28px, 3.4vw, 40px);
+  font-size: clamp(26px, 3.2vw, 38px);
   text-transform: uppercase;
-  letter-spacing: 0.01em;
-  line-height: 1.1;
+  letter-spacing: -0.012em;
+  line-height: 1.12;
   margin: 0 0 18px;
   color: var(--ink);
 }
-.section-title--onlight{ color: var(--white); }
+.section-title--onlight{
+  color: var(--white);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ---- Subhead: the one style for divisions INSIDE a section ----
+   Used by Publications (Published work / Working papers), Awards
+   (Awards & Prizes / Fellowships & Grants) and Teaching (Teaching
+   Assistant). Previously these were three unrelated treatments — a
+   full-size section title, a 12.5px red mono label, and a 20px display
+   heading — so the same structural job looked different in each
+   section. Sized clearly below .section-title and clearly above the
+   list items beneath it. */
+.subhead{
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: -0.005em;
+  line-height: 1.25;
+  color: var(--ink);
+  margin: 0 0 14px;
+}
+.subhead--onlight{
+  color: rgba(245,242,236,0.92);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* Space above a subhead that follows earlier content, rather than one
+   that opens a section directly under its kicker. */
+.fellowship-list + .subhead,
+.pub-list + .subhead{ margin-top: 52px; }
+.ta-list-wrap .subhead,
+.subhead + .ta-list{ margin-top: 0; }
 
 .section-lede{
-  font-size: 16.5px;
+  font-size: 16px;
   line-height: 1.65;
   color: #5A5648;
-  max-width: 640px;
+  max-width: var(--measure);
   margin: 0 0 48px;
 }
 .publications .section-lede,
 .contact .section-lede{ color: rgba(245,242,236,0.75); }
+/* Secondary intro paragraph, sits under .section-lede. Matches the lede's
+   size and colour — the two read as one continuous introduction rather
+   than a lede with a subordinate note under it. */
+.section-body{
+  font-size: 16px;
+  line-height: 1.65;
+  color: #5A5648;
+  max-width: var(--measure);
+  margin: 0 0 48px;
+}
+/* When a body paragraph follows the lede, tighten the gap between them. */
+.section-lede:has(+ .section-body){ margin-bottom: 18px; }
+
+/* Dissertation intro runs the same measure as the case ribbons beneath it,
+   rather than the narrower 640px column used elsewhere. */
+.research .section-lede,
+.research .section-body{ max-width: none; }
 
 .btn{
   display: inline-block;
   font-family: var(--font-mono);
-  font-size: 13px;
+  font-size: 13.5px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   text-decoration: none;
@@ -516,131 +998,222 @@ body{
 .btn:hover{ transform: translateY(-2px); }
 .btn--primary{ background: var(--red); color: var(--white); }
 .btn--primary:hover{ background: var(--red-deep); }
-.btn--large{ padding: 18px 34px; font-size: 14px; }
+.btn--large{ padding: 18px 34px; font-size: 13.5px; }
 
 /* ============================================================
    DISSERTATION RESEARCH — case blocks
    ============================================================ */
-.research{ padding: 100px 0 110px; }
-
-.case-block{
-  display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 56px;
-  align-items: center;
-  padding: 56px 0;
-  border-top: 1px solid #D6CFC0;
-}
-.case-block:first-of-type{ border-top: none; }
-.case-block--reverse{ direction: rtl; }
-.case-block--reverse > *{ direction: ltr; }
-
-.case-photo{
-  width: 100%;
-  display: block;
-  aspect-ratio: 4 / 3;
-  object-fit: cover;
-}
-
-.case-copy{ position: relative; padding-left: 24px; border-left: 3px solid var(--case-color); }
-.case-eyebrow{
-  font-family: var(--font-mono);
-  font-size: 12.5px;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--case-color);
-  margin: 0 0 10px;
-}
-.case-copy h3{
-  font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 28px;
-  text-transform: uppercase;
-  margin: 0 0 16px;
-  color: var(--ink);
-}
-.case-copy p{
-  font-size: 15.5px;
-  line-height: 1.7;
-  color: #4A473E;
-  margin: 0 0 16px;
-}
-.case-copy p:last-child{ margin-bottom: 0; }
-
-@media (max-width: 860px){
-  .case-block, .case-block--reverse{ grid-template-columns: 1fr; direction: ltr; gap: 28px; padding: 40px 0; }
-}
+.research{ padding: 50px 0 55px; }
 
 /* ============================================================
    ACADEMIC PUBLICATIONS
    ============================================================ */
-.publications{ background: var(--ink); padding: 110px 0; }
+.publications{ background: var(--ink); padding: 55px 0; }
 
-.pub-list{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+/* Capped like every other prose column. The year/right-hand column inside
+   each row is unaffected — it just sits at the measure instead of the far
+   edge of the page. */
+.pub-list{ list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; max-width: var(--measure); }
 .pub-item{
   border-top: 1px solid rgba(245,242,236,0.15);
   padding: 34px 0;
 }
 .pub-item:last-child{ border-bottom: 1px solid rgba(245,242,236,0.15); }
 
-.pub-tag{
-  font-family: var(--font-mono);
-  font-size: 11.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 5px 10px;
-  display: inline-block;
-  margin-bottom: 14px;
-}
-.pub-tag--wp{ background: rgba(200,134,42,0.15); color: var(--ochre); border: 1px solid rgba(200,134,42,0.4); }
-.pub-tag--rev{ background: rgba(158,43,37,0.25); color: #E39187; border: 1px solid rgba(158,43,37,0.5); }
-
+/* Working paper titles. Display face, matching the title convention, but
+   deliberately smaller and lighter than a section heading: published work
+   below is a dense citation with no heading of its own, so anything
+   heavier here makes unpublished work outrank published. */
 .pub-item h3{
   font-family: var(--font-display);
-  font-weight: 600;
-  font-size: 22px;
-  text-transform: uppercase;
-  color: var(--white);
-  margin: 0 0 10px;
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: rgba(245,242,236,0.85);
+  margin: 0 0 5px;
 }
 .pub-desc{
-  font-size: 15px;
-  line-height: 1.7;
-  color: rgba(245,242,236,0.75);
+  font-size: 13.5px;
+  line-height: 1.65;
+  color: rgba(245,242,236,0.62);
   margin: 0;
-  max-width: 700px;
+  max-width: var(--measure);
 }
 .pub-desc em{ color: var(--ochre); font-style: italic; }
+/* Matches .pub-cite a, so links read the same throughout the dark band.
+   The description text is dimmed to 62% white, so the link sits at full
+   ochre to lift it clear of the surrounding prose. */
+.pub-desc a{
+  color: var(--ochre);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(200,134,42,0.35);
+  white-space: nowrap;
+}
+.pub-desc a:hover{ border-bottom-color: var(--ochre); }
+
+/* Full Chicago citations for published work — hanging indent, as in a
+   bibliography, so author surnames line up down the left. Set slightly
+   larger and brighter than the working-paper block beneath it, since
+   published work carries no heading of its own to signal its standing. */
+.pub-cite{
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(245,242,236,0.95);
+  margin: 0;
+  padding-left: 28px;
+  text-indent: -28px;
+  max-width: var(--measure);
+}
+.pub-cite em{ font-style: italic; }
+/* The article title inside an otherwise plain Chicago citation. Bolded so
+   published work carries more weight than the working-paper titles below,
+   without breaking the citation into separate heading and detail lines —
+   it stays a single copy-pasteable unit. */
+.pub-cite-title{
+  font-weight: 700;
+  color: var(--white);
+}
+.pub-cite a{
+  color: var(--ochre);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(200,134,42,0.35);
+  word-break: break-word;
+}
+.pub-cite a:hover{ border-bottom-color: var(--ochre); }
+
+/* Second heading inside the same section sits closer than a section start. */
+.pub-subhead{ margin-top: 64px; }
 
 /* ============================================================
    TEACHING EXPERIENCE
    ============================================================ */
-.teaching{ padding: 110px 0; }
-.teaching-grid{ display: grid; grid-template-columns: 1.4fr 1fr; gap: 50px; align-items: start; }
-.teaching p{ font-size: 16px; line-height: 1.7; color: #4A473E; }
+.teaching-body{ font-size: 16px; line-height: 1.7; color: #5A5648; max-width: var(--measure); margin: 0; }
 
-.teaching-card{ background: var(--white); border: 2px solid var(--ink); padding: 32px; }
-.teaching-card-label{
-  font-family: var(--font-mono);
-  font-size: 11.5px;
+/* Syllabus download, sitting in the flow between the course line and the
+   description. */
+.syllabus-link{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 14px;
+  margin: 0 0 22px;
+  padding: 12px 18px;
+  background: var(--white);
+  border: 1.5px solid var(--ink);
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.syllabus-link:hover{ transform: translateY(-3px); background: var(--paper); }
+.syllabus-link-label{
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 14.5px;
   text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+.syllabus-link-cta{
+  font-family: var(--font-mono);
+  font-size: 12px;
   letter-spacing: 0.08em;
   color: var(--red);
-  margin: 0 0 4px;
 }
+
+/* Title wraps to the same measure as the body text below it. */
+.teaching-title{ max-width: var(--measure); margin-bottom: 10px; }
+
+/* Marks the seminar as taught solo, distinguishing it from the
+   assistantships listed below. */
+.teaching-role{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--red);
+  margin: 0 0 14px;
+}
+
+
+.ta-list{ list-style: none; margin: 0; padding: 0; max-width: var(--measure); }
+.ta-list li{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 24px;
+  padding: 13px 0;
+  border-top: 1px solid #D6CFC0;
+}
+.ta-list li:last-child{ border-bottom: 1px solid #D6CFC0; }
+.ta-course{ font-size: 14.5px; color: var(--ink); }
+.ta-terms{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: #6B6759;
+  white-space: nowrap;
+}
+.ta-eval-wrap{ flex-basis: 100%; margin-top: 6px; }
+/* Sits below the whole course list now, so it needs its own top spacing
+   rather than inheriting it from the wrapper span. */
+.ta-list + .ta-eval-link{ margin-top: 20px; }
+.ta-eval-link{
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  padding: 11px 16px;
+  background: var(--white);
+  border: 1.5px solid var(--ink);
+  text-decoration: none;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.ta-eval-link:hover{ transform: translateY(-3px); background: var(--paper); }
+.ta-eval-link-label{
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 13.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+.ta-eval-link-cta{
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: var(--red);
+}
+
+@media (max-width: 620px){
+  .ta-list li{ flex-direction: column; gap: 4px; }
+  .ta-terms{ white-space: normal; }
+}
+
+.teaching{ padding: 55px 0; }
+
 .teaching-card-label:not(:first-child){ margin-top: 20px; }
-.teaching-card-value{ font-size: 15.5px; color: var(--ink); margin: 0; font-weight: 600; }
 
 @media (max-width: 760px){
-  .teaching-grid{ grid-template-columns: 1fr; }
-}
+  }
 
 /* ============================================================
    PUBLIC ENGAGEMENT
    ============================================================ */
-.engagement{ padding: 110px 0; }
+.engagement{ padding: 55px 0; }
+.engagement .section-lede a{
+  color: var(--red);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(158,43,37,0.4);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.engagement .section-lede a:hover{
+  color: var(--red-deep);
+  border-bottom-color: var(--red-deep);
+}
 
-.engagement-list{ list-style: none; margin: 0; padding: 0; }
+/* Capped to match .section-lede above it. Applied to the list rather than
+   to the title alone, so the divider rules between items stop at the same
+   point — narrow text under full-width lines looks like a mistake. */
+.engagement-list{ list-style: none; margin: 0; padding: 0; max-width: var(--measure); }
 .engagement-item{
   padding: 26px 0;
   border-top: 1px solid #D6CFC0;
@@ -659,11 +1232,24 @@ body{
 .engagement-title{
   font-family: var(--font-display);
   font-size: 18px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--ink);
   margin: 0;
   line-height: 1.5;
 }
+.engagement-title a{
+  color: inherit;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(28,27,24,0.25);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.engagement-title a:hover{
+  color: var(--red);
+  border-bottom-color: var(--red);
+}
+/* Translation of a Czech or Slovak headline into English. Italic, because
+   that's the convention for a gloss and it separates the English from the
+   original title sharing the same line. */
 .engagement-gloss{
   font-family: var(--font-body);
   font-size: 14.5px;
@@ -671,67 +1257,171 @@ body{
   color: #6B6858;
   font-style: italic;
 }
-
-/* ============================================================
-   CURRICULUM VITAE
-   ============================================================ */
-.cv{ padding: 90px 0; background: var(--paper-deep); }
-.cv-inner{ display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 28px; }
-.cv-inner .section-title, .cv-inner .section-lede{ margin-bottom: 0; }
-.cv-inner .kicker{ margin-bottom: 10px; }
+/* Co-authors and editorial roles. Same family and size as .engagement-gloss
+   but upright — a byline isn't a gloss, and italicising it made the two
+   read as the same kind of information. */
+.engagement-credit{
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 400;
+  color: #6B6858;
+}
 
 /* ============================================================
    PROJECT SAUNA
    ============================================================ */
-.sauna{ padding: 110px 0; }
+.sauna{ padding: 55px 0; }
 
-.sauna-journal{ position: relative; padding-left: 28px; }
-.sauna-journal::before{
-  content: "";
-  position: absolute;
-  left: 0; top: 6px; bottom: 6px;
-  width: 2px;
-  background: var(--red-deep);
-}
+/* ---- Latest entry — the only one shown open. Full photo grid, full
+   text. This is what keeps the section from growing every time you
+   post: only ever one full-size entry lives here at a time. ---- */
+.sauna-entry{ position: relative; margin-bottom: 40px; }
+/* The dot marker and the 28px left indent that made room for it are gone.
+   Both were left over from the original timeline layout — a vertical red
+   rule down the left with a dot per entry — which was removed when the
+   section was restructured into a single open entry plus an archive. The
+   dot alone read as a stray mark, and the indent it required was the only
+   place on the site where text didn't line up with the section edge. The
+   entry is still marked by its date label. */
 
-.sauna-entry{ position: relative; padding-bottom: 48px; }
-.sauna-entry::before{
-  content: "";
-  position: absolute;
-  left: -33px; top: 6px;
-  width: 10px; height: 10px;
-  border-radius: 50%;
-  background: var(--red-deep);
-}
 .sauna-date{
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13.5px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   color: var(--red-deep);
   margin: 0 0 8px;
 }
 .sauna-entry-title{
   font-family: var(--font-display);
   font-weight: 600;
-  font-size: 22px;
+  font-size: 20px;
   text-transform: uppercase;
   margin: 0 0 12px;
   color: var(--ink);
 }
 .sauna-entry-text{
-  font-size: 15.5px;
+  font-size: 16px;
   line-height: 1.7;
   color: #4A473E;
-  max-width: 640px;
-  margin: 0 0 20px;
+  max-width: var(--measure);
+  margin: 0 0 24px;
 }
-.sauna-entry-photo{
+
+/* Photo grid — built for a build log, not a single hero shot per entry.
+   Works with 1 photo (fills the row) or many (wraps into a mosaic).
+   Add/remove <img class="sauna-photo"> tags freely; the grid absorbs
+   whatever count you give it. */
+.sauna-entry-photos{
+  display: grid;
+  /* Fixed two columns rather than auto-fill. auto-fill spread the photos
+     across the full section width — four across on a wide screen — while
+     the text beside them stopped at 640px, so the block looked misaligned. */
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  /* Matches .sauna-entry-text, so photos and prose share a left and right
+     edge. */
+  max-width: var(--measure);
+}
+/* Two columns get too narrow to read as photographs on a phone. */
+@media (max-width: 560px){
+  .sauna-entry-photos{ grid-template-columns: 1fr; }
+}
+.sauna-photo{
   width: 100%;
-  max-width: 560px;
   display: block;
-  aspect-ratio: 16/10;
+  aspect-ratio: 4/3;
   object-fit: cover;
+}
+/* A single photo in an entry runs wider and a little taller, so a lone
+   inspiration shot doesn't look stranded in a narrow column. */
+.sauna-entry-photos:has(.sauna-photo:only-child) .sauna-photo{
+  max-width: var(--measure);
+  aspect-ratio: 16/10;
+}
+/* A lone photo should not sit in a half-width column. */
+.sauna-entry-photos:has(.sauna-photo:only-child){
+  grid-template-columns: 1fr;
+}
+/* An odd number of photos leaves the last one in a half-width cell; let it
+   span the full measure instead so the block ends on a straight edge. */
+.sauna-photo:last-child:nth-child(odd):not(:only-child){
+  grid-column: 1 / -1;
+  aspect-ratio: 16/10;
+}
+
+/* ---- Archive — every older entry, collapsed by default so the page
+   doesn't grow with every post. Native <details>/<summary>, no JS. ---- */
+.sauna-archive{
+  border-top: 1.5px solid var(--ink);
+  padding-top: 20px;
+}
+.sauna-archive-toggle{
+  font-family: var(--font-mono);
+  font-size: 13.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sauna-archive-toggle::-webkit-details-marker{ display: none; }
+.sauna-archive-toggle::before{
+  content: "+";
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1;
+}
+.sauna-archive[open] .sauna-archive-toggle::before{ content: "–"; }
+.sauna-archive-toggle:hover{ color: var(--red-deep); }
+
+.sauna-archive-list{
+  padding-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* Compact treatment — deliberately smaller than the latest entry, so an
+   archived post reads as history, not as another full section. */
+.sauna-archive-entry{
+  padding-bottom: 24px;
+  border-bottom: 1px solid #E3DFD3;
+}
+.sauna-archive-entry:last-child{ border-bottom: none; padding-bottom: 0; }
+.sauna-archive-entry-head{
+  margin-bottom: 8px;
+}
+.sauna-archive-entry .sauna-date{ margin: 0 0 4px; }
+.sauna-archive-entry-title{
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin: 0;
+}
+.sauna-archive-entry-text{
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #4A473E;
+  max-width: var(--measure);
+  margin: 0 0 14px;
+}
+.sauna-archive-entry-photos{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.sauna-archive-photo{
+  width: 84px;
+  height: 84px;
+  object-fit: cover;
+  display: block;
 }
 
 /* ============================================================
@@ -739,27 +1429,55 @@ body{
    ============================================================ */
 .contact{
   background: var(--ink);
-  padding: 120px 0 100px;
-  text-align: center;
+  padding: 60px 0 50px;
+  /* Left-aligned like every other section, so the single left edge runs the
+     whole page and the closing section mirrors the hero panel — name at the
+     left, details beneath. The space this leaves on the right is deliberate
+     and currently empty. */
+  text-align: left;
   position: relative;
   overflow: hidden;
 }
 .contact::before{
   content: "";
   position: absolute;
-  top: -140px; left: 50%;
+  /* Follows the content to the left, now that the section is no longer
+     centred — left at 50% would have haloed the empty right-hand side.
+     max() keeps it from drifting off-screen on narrow viewports. */
+  top: -140px; left: max(10%, 120px);
   transform: translateX(-50%);
   width: 900px; height: 900px;
   border-radius: 50%;
   background: radial-gradient(circle, rgba(200,134,42,0.14), transparent 65%);
 }
 .contact-inner{ position: relative; z-index: 1; }
+/* Closes the page the way it opened — the same name, same display face and
+   uppercase treatment as the hero, scaled down. Fills what was an awkward
+   gap between the kicker and the department line. */
+.contact-name{
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.12;
+  text-transform: uppercase;
+  letter-spacing: -0.018em;
+  color: var(--white);
+  margin: 0 0 14px;
+  /* Light-on-dark renders thinner; matches the treatment used on the other
+     dark-background headings. */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
 .contact-lede{
   font-size: 16px;
+  /* Explicit, now that this runs to two lines — the inherited 1.6 was set
+     for paragraphs and leaves the two lines looking loosely related rather
+     than as one address block. */
+  line-height: 1.45;
   color: rgba(245,242,236,0.7);
   margin: 0 0 44px;
 }
-.contact-links{ display: flex; justify-content: center; gap: 32px; flex-wrap: wrap; }
+.contact-links{ display: flex; justify-content: flex-start; gap: 32px; flex-wrap: wrap; }
 .contact-link{
   font-family: var(--font-mono);
   font-size: 13.5px;
@@ -774,12 +1492,17 @@ body{
 .contact-link:hover{ color: var(--ochre); border-color: var(--ochre); }
 
 /* ============================================================
-   MOBILE NAV — breakpoint set wider than the other mobile rules below,
-   because the nav LINKS themselves need ~950px of room to fit without
-   crowding the brand logo; 900px left a squeeze zone between ~900-950px
-   where the full nav was forced to show but didn't actually fit.
+   MOBILE NAV — the nine nav links measure ~910px at desktop sizing, plus
+   the header's 32px padding each side, so the full nav needs ~975px of
+   viewport. Switching to the burger at 1000px leaves a small buffer for
+   font rendering differences between browsers. (Was 1100px, set back when
+   the brand mark also had to fit on the bar.)
    ============================================================ */
-@media (max-width: 1024px){
+@media (max-width: 1000px){
+  /* The nav goes position:fixed below this width, so it leaves the header's
+     flex flow and the burger becomes the only item on the bar. Left-aligned,
+     in the position the brand mark used to occupy. */
+  .site-header{ justify-content: flex-start; }
   .main-nav{
     position: fixed;
     top: var(--nav-height);
@@ -800,39 +1523,67 @@ body{
 }
 
 @media (max-width: 900px){
-  .hero-panel{
-    padding: 32px 28px 30px;
-  }
   .about{ padding-top: 130px; }
-  /* The horizontal SVG diagram needs a fixed-width arrow column that
-     doesn't suit narrow phones — hide the SVG and stack labels vertically
-     instead, with simple CSS down-arrows between them. */
-  .hero-flow{
-    grid-template-columns: 1fr;
+}
+
+/* ---- Everything below 900px gets the compact hero ----
+   The horizontal flow diagram only fits the panel at full desktop width.
+   Below that it used to collapse into a vertical stack, which was the
+   tallest thing in the panel and pushed the background photo off screen.
+   Rather than maintain a separate mid-size arrangement, everything under
+   900px now gets one treatment: no diagram, compacted panel, per-photo
+   crops. Above 900px the original horizontal diagram is untouched. */
+@media (max-width: 900px){
+  /* svh = the *small* viewport height (toolbars shown). Prevents the
+     hero from being sized against a taller viewport than is actually
+     visible while mobile browser chrome is on screen. Browsers without
+     svh support ignore this and keep the 100vh above. */
+  .hero{ min-height: 100svh; }
+
+  .hero-bottom-row{ padding: 0 14px 16px; gap: 12px 16px; }
+
+  /* Framing below 900px. A 16:9 photo covering a narrow viewport fills
+     the full height and crops the SIDES, so only the horizontal value
+     does much here — vertical keywords are close to a no-op at phone
+     size. Each value centres that photo's subject in the visible strip. */
+  /* Prague: the handwritten "R 129 / Různé" label is the subject; at 62%
+     its right edge was clipped, so it sits further right than it looks. */
+  .hero-photo[data-case="cz"]{ background-position: 74% center; }
+  /* Valamo: the copper cupola and cross sit at ~63% across — centred at
+     50% they end up jammed against the right edge of the crop. */
+  .hero-photo[data-case="fi"]{ background-position: 68% center; }
+  /* Togh: the legible arcade of ruined windows sits left of centre. */
+  .hero-photo[data-case="am"]{ background-position: 40% center; }
+
+  .hero-panel{
+    /* Fluid rather than fixed: at 375px these bottom out at the phone
+       values, and by 900px they've grown to meet the desktop sizes, so
+       there's no visible jump at the breakpoint and the panel never looks
+       undersized on a tablet. */
+    padding: clamp(18px, 2.4vw, 30px) clamp(22px, 3vw, 40px) clamp(16px, 2vw, 26px);
+    /* Floor the width so the panel keeps some presence on wider screens
+       instead of shrinking to whatever its longest line happens to be. */
+    /* Same target as the desktop cap: wide enough for the cases row on one
+       line wherever the viewport allows it. min() means narrow phones still
+       just use the full column width and the row wraps there, which is the
+       expected direction. */
+    min-width: min(100%, 640px);
+    max-width: 100%;
   }
-  .flow-labels{ grid-column: 1; }
-  .flow-input{
-    display: block;
-    text-align: left;
-    height: auto;
-    position: relative;
-    padding-bottom: 34px;
-    white-space: normal;
+
+  /* 4.6vw matches the desktop rule's scaling rate, so the name grows
+     continuously through the breakpoint rather than jumping. */
+  .hero-name{ font-size: clamp(30px, 4.6vw, 42px); margin-bottom: 10px; }
+  .hero-subtitle{ font-size: clamp(12.5px, 1.6vw, 14.5px); letter-spacing: 0.07em; margin-bottom: 18px; }
+
+  .hero-cases{ padding-top: 8px; }
+  .hero-cases span{
+    font-size: clamp(11.5px, 1.5vw, 13.5px);
+    padding-right: clamp(12px, 1.8vw, 20px);
+    margin-right: clamp(12px, 1.8vw, 20px);
   }
-  .flow-input::after{
-    content: "\2193"; /* ↓ */
-    position: absolute;
-    left: 46px;
-    bottom: 4px;
-    transform: translateX(-50%);
-    color: var(--white);
-    font-weight: 700;
-    font-size: 26px;
-    line-height: 1;
-  }
-  .flow-arrows{ display: none; }
-  .flow-result{
-    grid-column: 1;
-    margin-top: 2px;
-  }
+
+  .hero-method{ margin-top: 10px; padding-top: 8px; font-size: clamp(11px, 1.4vw, 12.5px); }
+
+  .hero-caption{ font-size: clamp(11.5px, 1.5vw, 13px); }
 }

@@ -7,19 +7,73 @@
 <meta name="description" content="Comparative historical research on forced displacement, memory, and territorial loss: Czechoslovakia, Finland, Armenia.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Public+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Public+Sans:wght@400;500;600&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+
+<!-- Structured data. Invisible to readers; tells search engines that
+     "Matěj Jungwirth" and "Matej Jungwirth" are the same person, and ties
+     this site to the Scholar and Bluesky profiles so the two can be
+     connected to each other. The visible page keeps the háček throughout. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Matěj Jungwirth",
+  "alternateName": ["Matej Jungwirth", "M. Jungwirth", "Jungwirth, Matěj"],
+  "givenName": "Matěj",
+  "familyName": "Jungwirth",
+  "jobTitle": "PhD Candidate in Political Science",
+  "email": "mailto:matej@u.northwestern.edu",
+  "affiliation": [
+    {
+      "@type": "CollegeOrUniversity",
+      "name": "Northwestern University",
+      "department": {
+        "@type": "Organization",
+        "name": "Department of Political Science"
+      }
+    },
+    {
+      "@type": "Organization",
+      "name": "Migration Institute of Finland"
+    },
+    {
+      "@type": "Organization",
+      "name": "Association for International Affairs (AMO)"
+    }
+  ],
+  "knowsAbout": [
+    "Comparative Politics",
+    "International Relations",
+    "Forced displacement",
+    "Territorial loss",
+    "Collective memory",
+    "Survey experiments"
+  ],
+  "knowsLanguage": ["English", "Czech", "Finnish", "German"],
+  "sameAs": [
+    "https://scholar.google.com/citations?user=qbNzBMsAAAAJ&hl=en",
+    "https://bsky.app/profile/matejjung.bsky.social",
+    "https://osf.io/3da76/",
+    "https://amo.cz/en/team/matej-jungwirth"
+  ]
+}
+</script>
 </head>
 <body>
 
 <header class="site-header" id="siteHeader">
-  <a class="brand" href="#top">MJ</a>
   <nav class="main-nav" id="mainNav">
+    <a href="#about">About</a>
     <a href="#research">Dissertation</a>
     <a href="#publications">Publications</a>
     <a href="#teaching">Teaching</a>
+    <a href="#fellowships">Awards</a>
     <a href="#engagement">Public&nbsp;Engagement</a>
-    <a href="#cv">CV</a>
+    <!-- HIDDEN Sept 2026 — restore when Dossier section returns
+    <a href="#dossier">Dossier</a>
+    -->
+    <a href="materials/cv.pdf" download>CV</a>
     <a href="#sauna">Sauna</a>
     <a href="#contact">Contact</a>
   </nav>
@@ -40,24 +94,10 @@
       <div class="hero-panel">
         <h1 class="hero-name">Matěj<br>Jungwirth</h1>
         <p class="hero-subtitle">PhD Candidate in Political Science<br>Northwestern University</p>
-        <div class="hero-flow">
-          <div class="flow-labels">
-            <span class="flow-input">Territorial loss</span>
-            <span class="flow-input">Forced displacement</span>
-            <span class="flow-input">Collective memory</span>
-          </div>
-          <svg class="flow-arrows" viewBox="0 0 46 84" preserveAspectRatio="none" aria-hidden="true">
-            <defs>
-              <marker id="flowArrowhead" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
-                <path d="M0,0 L5,2.5 L0,5 Z" fill="var(--white)" />
-              </marker>
-            </defs>
-            <path d="M0,14 L11,14 L39,26" class="flow-arrow-line" marker-end="url(#flowArrowhead)" />
-            <path d="M0,42 L39,42" class="flow-arrow-line" marker-end="url(#flowArrowhead)" />
-            <path d="M0,70 L11,70 L39,58" class="flow-arrow-line" marker-end="url(#flowArrowhead)" />
-          </svg>
-          <span class="flow-result">Territorial<br>Mourning</span>
-        </div>
+        <!-- The territorial mourning flow diagram used to sit here. Removed
+             Sept 2026; markup and CSS saved in
+             _archive-territorial-mourning-diagram.html for possible reuse
+             in the dissertation section. -->
         <div class="hero-cases">
           <span class="case-cz">Czechoslovakia 1938</span>
           <span class="case-fi">Finland 1940/1944</span>
@@ -75,15 +115,22 @@
   <!-- ============ ABOUT ============ -->
   <section class="about" id="about">
     <div class="section-inner about-grid">
+      <p class="kicker about-kicker">About</p>
       <div class="about-photo-wrap">
-        <img src="images/headshot_web.jpg" alt="Matěj Jungwirth" class="about-photo">
+        <img src="images/portrait.jpg" alt="Matěj Jungwirth" class="about-photo">
         <div class="about-photo-block" aria-hidden="true"></div>
       </div>
-      <div class="about-text">
-        <p class="kicker">About</p>
-        <h2>What happens to a people after the land is lost?</h2>
-        <p>I am a PhD candidate in Political Science at Northwestern University. My dissertation, <em>Losing Land, Not Its People</em>, develops the concept of <strong>territorial mourning</strong> — how displaced populations and the societies around them remember, grieve, and politically process the loss of homeland territory.</p>
-        <p>I work comparatively and historically across three cases — the Sudetenland expulsions, ceded Finnish Karelia, and post-2023 Nagorno-Karabakh — combining archival research and fieldwork with original survey experiments. Alongside the dissertation, I study conflict attitudes in pre-2022 Ukraine and work as an analyst on transatlantic politics.</p>
+      <div class="about-text about-text-intro">
+        <p>Hello!</p>
+        <p>My name is Matěj [ma-tey] Jungwirth and I am a PhD candidate in Political Science at Northwestern University, and a Visiting Research Fellow with the Migration Institute of Finland.</p>
+        <p>In my doctoral <a href="#research">dissertation</a>, <em>Losing Land, Not Its People</em>, I develop a novel concept of <strong>territorial mourning</strong> — the society-wide response to the trauma of territorial loss and forced displacement. I argue that understanding the emergence, variation and persistence of territorial mourning is key in explaining present-day political outcomes in loss-incurring states. These legacies include public attitudes towards territorial compromises, public commemoration of the lost territories and foreign policies towards historical enemies.</p>
+        <p>Methodologically, my dissertation is guided by the logic of Comparative Historical Analysis; through mixed-methods research approach, I draw on original surveys and survey experiments, archival research in Czech, Finnish and German, expert interviews and online content analysis.</p>
+      </div>
+      <div class="about-text about-text-rest">
+        <p>Alongside my dissertation research and <a href="#teaching">undergraduate teaching</a>, I <a href="#publications">publish</a> and study polarization in Central and Eastern Europe, return decision-making of displaced Ukrainians and conflict resolution attitudes in pre-2022 Ukraine.</p>
+        <p>Beyond academia, I <a href="#engagement">discuss</a> developments in US politics in media outlets in the Czech Republic and Slovakia as a Research Fellow with the Prague-based AMO think tank.</p>
+        <p>In my personal life, I greatly enjoy a variety of sports with my son including rock climbing, soccer and baseball, spending time in the great Midwestern outdoors and building a proper <a href="#sauna">Finnish sauna</a>.</p>
+        <p>I am best contacted via email: matej[at]u.northwestern.edu</p>
       </div>
     </div>
   </section>
@@ -95,44 +142,34 @@
 
         <a href="#research" class="guidepost guidepost--red guidepost--tall">
           <p class="guidepost-label">01</p>
-          <h3>Dissertation Research</h3>
-          <p>Three cases of displacement and memory — the Sudetenland, Karelia, Nagorno-Karabakh — in photographs, archives, and data.</p>
-          <span class="guidepost-cta">Explore the cases →</span>
+          <div class="guidepost-tall-center">
+            <h3>Dissertation Research</h3>
+            <p class="guidepost-meta">Losing Land, Not Its People</p>
+          </div>
         </a>
 
-        <a href="#publications" class="guidepost guidepost--slate">
+        <a href="#publications" class="guidepost guidepost--ink">
           <p class="guidepost-label">02</p>
           <h3>Academic Publications</h3>
-          <p>Working papers and articles under review.</p>
-          <span class="guidepost-cta">Read →</span>
+          <p class="guidepost-meta">Public Opinion Quarterly, 2026 (with Hrbková &amp; Cely)</p>
+        </a>
+
+        <a href="#fellowships" class="guidepost guidepost--slate">
+          <p class="guidepost-label">03</p>
+          <h3>Fellowships &amp; Awards</h3>
+          <p class="guidepost-meta">Migration Institute of Finland, 2026</p>
         </a>
 
         <a href="#teaching" class="guidepost guidepost--paper">
-          <p class="guidepost-label">03</p>
+          <p class="guidepost-label">04</p>
           <h3>Teaching Experience</h3>
-          <p>Critical Perspectives on Territorial Conflict — Northwestern, Fall 2026.</p>
-          <span class="guidepost-cta">Syllabus →</span>
+          <p class="guidepost-meta">Critical Perspectives on Territorial Conflict — Fall 2026</p>
         </a>
 
         <a href="#engagement" class="guidepost guidepost--ochre">
-          <p class="guidepost-label">04</p>
-          <h3>Public Engagement</h3>
-          <p>Analysis and commentary — Czech Television, info.cz, Heinrich Böll Stiftung.</p>
-          <span class="guidepost-cta">In the media →</span>
-        </a>
-
-        <a href="#cv" class="guidepost guidepost--ink">
           <p class="guidepost-label">05</p>
-          <h3>Curriculum Vitae</h3>
-          <p>The full academic record.</p>
-          <span class="guidepost-cta">Download PDF →</span>
-        </a>
-
-        <a href="#sauna" class="guidepost guidepost--warm">
-          <p class="guidepost-label">06</p>
-          <h3>Project Sauna</h3>
-          <p>A build journal. One yard, one stove, no deadline.</p>
-          <span class="guidepost-cta">Follow the build →</span>
+          <h3>Public Engagement</h3>
+          <p class="guidepost-meta">Czech &amp; Slovak media commentary on US policy</p>
         </a>
 
       </div>
@@ -144,45 +181,87 @@
     <div class="section-inner">
       <p class="kicker">Dissertation Research</p>
       <h2 class="section-title">Losing Land, Not Its People</h2>
-      <p class="section-lede">Three cases, separated by geography and decades, linked by the same question: what happens to a people's sense of home when the border moves without them? Each case pairs archival and field research with an original survey experiment.</p>
+      <p class="section-lede">In my doctoral dissertation (co-chaired by James Mahoney and Jordan Gans-Morse), I seek to explain the phenomenon and legacies of territorial mourning or how societies respond to the forced displacement of co-citizens engendered by the loss of national territories. I argue that across cases the developments in the immediate aftermath of territorial dispossession lastingly shape the nature and character of territorial mourning — which takes a distinctly different character for displaced citizens than for their non-displaced compatriots. The variation in the prevailing type of territorial mourning then influences the way lost territories are commemorated and instrumentalized at the national level. Different modes of territorial mourning lead to, in turn, different impacts on public attitudes, national policies and commemorative practices with regards to the lost territories and displaced populations.</p>
+      <!-- Territorial mourning diagram. Moved here from the hero panel
+           (Oct 2026) — it illustrates the concept the lede above describes,
+           and has room to breathe at section width rather than competing
+           with the photograph. -->
+      <div class="concept-flow" role="img"
+           aria-label="Territorial loss, forced displacement and collective memory together produce territorial mourning">
+        <div class="concept-labels">
+          <span class="concept-input">Territorial loss</span>
+          <span class="concept-input">Forced displacement</span>
+          <span class="concept-input">Collective memory</span>
+        </div>
+        <svg class="concept-arrows" viewBox="0 0 46 84" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <marker id="conceptArrowhead" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto">
+              <path d="M0,0 L5,2.5 L0,5 Z" fill="var(--red)" />
+            </marker>
+          </defs>
+          <path d="M0,14 L11,14 L39,26" class="concept-arrow-line" marker-end="url(#conceptArrowhead)" />
+          <path d="M0,42 L39,42" class="concept-arrow-line" marker-end="url(#conceptArrowhead)" />
+          <path d="M0,70 L11,70 L39,58" class="concept-arrow-line" marker-end="url(#conceptArrowhead)" />
+        </svg>
+        <span class="concept-result">Territorial<br>Mourning</span>
+      </div>
+
+      <p class="section-body">Methodologically, my dissertation is a mixed-methods project following the overarching logic of Comparative Historical Analysis across three cases of territorial loss and large-scale dispossession of people. Across these cases, I weave together archival research, expert interviews, ethnographic fieldwork and original survey data collection to trace the emergence and influence of territorial mourning. Given the cross-country historical nature of my research, I read and study primary and archival sources in Czech, Finnish, and German for my dissertation.</p>
 
       <!-- CASE 1 — CZECHOSLOVAKIA / SUDETENLAND -->
-      <article class="case-block">
-        <div class="case-media">
-          <img src="images/hero_CZ.jpg" alt="Czech National Archive, Prague" class="case-photo">
+      <article class="case-map-block">
+        <div class="case-map">
+          <div class="case-map-row">
+            <div class="case-panel">
+              <h3>Sudetenland</h3>
+              <p class="case-panel-eyebrow">Czechoslovakia &middot; 1938</p>
+              <p>Following the infamous 1938 Munich Agreement, the Czechoslovak republic was forced to give up some one fifth of its territory — the Sudetenland borderlands with large ethnic German populations — over to Nazi Germany. This territorial transfer engendered the displacement of some 370,000 Czechoslovak citizens from the ceded territories to the remainder of Czechoslovakia.</p>
+              <p class="case-methods">Methods: archival research of public administrative records in the Czech National Archive; public discourse analysis.</p>
+            </div>
+          </div>
+          <div class="case-map-figure">
+            <img src="images/case-sudetenland-map-1938.jpg" alt="1938 map of the Second Czechoslovak Republic after the Munich Agreement" class="case-map-img">
+          </div>
         </div>
-        <div class="case-copy" style="--case-color: var(--red);">
-          <p class="case-eyebrow">Czechoslovakia · 1938</p>
-          <h3>The Sudetenland</h3>
-          <p>The annexation of the Sudetenland and the postwar expulsion of ethnic Germans left behind a landscape of contested memory. This strand of the project traces how that loss has been archived, organized, and politicized across generations — from state resettlement records of the late 1930s to the discourse of present-day Sudeten German associations.</p>
-          <p>Methods: archival research in Czech and German state records; a social-media discourse pipeline (Facebook, YouTube) tracking contemporary Sudeten German organizing around the 2026 Brno sjezd; comparative-historical analysis of displacement bureaucracy.</p>
-        </div>
+        <p class="case-credit"><span class="case-map-mark">*</span> &ldquo;Small but ours&rdquo;, map of truncated Czechoslovakia after the Munich agreement, 1938. Kol&iacute;nsk&aacute; cikorka. Via Wikimedia Commons</p>
       </article>
 
       <!-- CASE 2 — FINLAND / KARELIA -->
-      <article class="case-block case-block--reverse">
-        <div class="case-media">
-          <img src="images/hero_E.jpg" alt="New Valamo Monastery, Heinävesi" class="case-photo">
+      <article class="case-map-block">
+        <div class="case-map">
+          <div class="case-map-row">
+            <div class="case-panel case-panel--ochre">
+              <h3>Karelia</h3>
+              <p class="case-panel-eyebrow">Finland &middot; 1940/1944</p>
+              <p>Following its resolute defense in the Winter War, Finland ceded Karelia and additional eastern regions &mdash; some 11% of its territory &mdash; in 1940, a loss upheld despite temporary reclamation in 1941&ndash;1944. Some 420,000 Finnish citizens were resettled in the remainder of Finland through a mass state-led land redistribution effort.</p>
+              <p class="case-methods">Methods: archival research; expert interviews; local ethnography in Eastern Finland.</p>
+            </div>
+          </div>
+          <div class="case-map-figure">
+            <img src="images/case-karelia-coats-of-arms.jpg" alt="Coats of arms of ceded Karelian municipalities, Karjalatalo, Helsinki" class="case-map-img">
+          </div>
         </div>
-        <div class="case-copy" style="--case-color: var(--ochre);">
-          <p class="case-eyebrow">Finland · 1940/1944</p>
-          <h3>Karelia</h3>
-          <p>Ceded to the Soviet Union at the end of the Continuation War, Finnish Karelia produced one of Europe's largest wartime resettlements — and, decades later, a resilient institutional memory. New Valamo Monastery, evacuated from Ladoga Karelia in 1940, is one such institution: a community that carried its identity across a new border and rebuilt.</p>
-          <p>Methods: archival and field research with Karjalan Liitto, the Karelian resettlers' association, including translation of its 2027–2029 strategic planning document; interviews and site visits across former and present Karelian communities.</p>
-        </div>
+        <p class="case-credit"><span class="case-map-mark">*</span> Coats of arms of ceded Karelian municipalities, Karjalatalo, Helsinki. Photographed 2026</p>
       </article>
 
-      <!-- CASE 3 — ARMENIA / NAGORNO-KARABAKH -->
-      <article class="case-block">
-        <div class="case-media">
-          <img src="images/hero_NK.jpg" alt="Togh, Nagorno-Karabakh" class="case-photo">
+      <!-- CASE 3 — ARMENIA / NAGORNO-KARABAKH
+           Own photograph, Gandzasar Monastery, 2014 — Armenian material
+           heritage in the territory before the 2023 displacement. -->
+      <article class="case-map-block">
+        <div class="case-map">
+          <div class="case-map-row">
+            <div class="case-panel case-panel--slate">
+              <h3>Nagorno-Karabakh</h3>
+              <p class="case-panel-eyebrow">Armenia &middot; 2023</p>
+              <p>The military offensive by Azeri forces in the fall of 2023 brought an end to nearly three decades of Armenia's control over the disputed mountainous territory of Nagorno-Karabakh. Following the change of sovereignty, some 120,000 Armenians fled the territory to the remainder of Armenia.</p>
+              <p class="case-methods">Methods: original survey fielded via CRRC-Armenia in May 2026 (n = 759). <a href="https://osf.io/qdfcg" target="_blank" rel="noopener">Study pre-registration</a></p>
+            </div>
+          </div>
+          <div class="case-map-figure">
+            <img src="images/case-karabakh-gandzasar.jpg" alt="Khachkar memorial stones at Gandzasar Monastery, Nagorno-Karabakh" class="case-map-img">
+          </div>
         </div>
-        <div class="case-copy" style="--case-color: var(--slate);">
-          <p class="case-eyebrow">Armenia · 2023</p>
-          <h3>Nagorno-Karabakh</h3>
-          <p>The most recent displacement in the project. Following the 2023 exodus of the Nagorno-Karabakh Armenian population, this strand tests how territorial-loss salience and rootedness shape attitudes toward return — through a CRRC-Armenia CATI survey (n = 759, general population and displaced respondents) pre-registered on OSF.</p>
-          <p>Methods: pre-registered survey experiment (H1–H3); fieldwork and site documentation in Nagorno-Karabakh prior to 2023; data-quality auditing of interviewer-level response patterns.</p>
-        </div>
+        <p class="case-credit"><span class="case-map-mark">*</span> Khachkar memorial stones at Gandzasar Monastery, Nagorno-Karabakh. Photographed 2014</p>
       </article>
 
     </div>
@@ -192,23 +271,32 @@
   <section class="publications" id="publications">
     <div class="section-inner">
       <p class="kicker kicker--onlight">Academic Publications</p>
-      <h2 class="section-title section-title--onlight">Current pipeline</h2>
+      <h3 class="subhead subhead--onlight">Published work</h3>
 
       <ul class="pub-list">
         <li class="pub-item">
-          <div class="pub-meta"><span class="pub-tag pub-tag--wp">Working paper</span></div>
+          <p class="pub-cite">Hrbkov&aacute;, Lenka, Tade&aacute;&scaron; Cely, and Mat&#283;j Jungwirth. 2026. &ldquo;<span class="pub-cite-title">Not Your Mama&rsquo;s Ideology (But Close): Modest Generational Differences in Ideological Alignment in Postcommunist Europe.</span>&rdquo; <em>Public Opinion Quarterly</em>. <a href="https://doi.org/10.1093/poq/nfag041">https://doi.org/10.1093/poq/nfag041</a>.</p>
+        </li>
+        <li class="pub-item">
+          <p class="pub-cite">Jungwirth, Mat&#283;j, and Neonila Glukhodid. 2026. &ldquo;<span class="pub-cite-title">Returning to the Past? Typology of Decision-Making of Ukrainian Forced Migrants in the Czech Republic and Germany.</span>&rdquo; In <em>Fragmented Lives in Times of War</em>, edited by Lidia Kuzemska, 191&ndash;216. Bielefeld: transcript Verlag. <a href="https://doi.org/10.14361/9783839477427-191">https://doi.org/10.14361/9783839477427-191</a>.</p>
+        </li>
+      </ul>
+
+      <h3 class="subhead subhead--onlight pub-subhead">Working papers</h3>
+
+      <ul class="pub-list">
+        <li class="pub-item">
           <h3>Others Might Return but I Will Not</h3>
-          <p class="pub-desc">A paired self-other survey experiment (n = 1,048 Ukrainian refugees, Czech Republic) documenting a persistent self-other gap in expectations of permanent return, with a self-other forecasting framework and a conjoint-based test of gap structure across 21 attribute levels.</p>
+          <p class="pub-desc">I study refugees&rsquo; return decision-making using an original survey of displaced Ukrainians in the Czech Republic (n&nbsp;=&nbsp;1,048) fielded in fall of 2024. Using an innovative paired conjoint design, I show that under the same hypothetical conditions, refugees assess the return intentions of other displaced individuals differently than their own. <a href="https://aspredicted.org/scjn-p99c.pdf" target="_blank" rel="noopener">Study pre-registration</a></p>
         </li>
+
         <li class="pub-item">
-          <div class="pub-meta"><span class="pub-tag pub-tag--rev">In revision</span></div>
           <h3>Proximity, Permeability, and the Possibility of Violence</h3>
-          <p class="pub-desc">Border Regime Distances and Conflict Attitudes in Pre-2022 Ukraine. With Aaron Erlich and Calvin Garner. Revised toward a contested risk-avoidance vs. hardening framework, targeting <em>Journal of Peace Research</em>.</p>
+          <p class="pub-desc">With Aaron Erlich and Calvin Garner. Using multiple survey waves fielded in Ukraine between 2015 and 2019, we show that citizens&rsquo; distance to different border regimes with Russia and Russia-occupied territories is associated with conflict resolution attitudes.</p>
         </li>
         <li class="pub-item">
-          <div class="pub-meta"><span class="pub-tag pub-tag--wp">Working paper</span></div>
-          <h3>Territorial Loss Salience and Return Intentions in Armenia</h3>
-          <p class="pub-desc">A pre-registered CRRC-Armenia survey experiment (n = 759) testing how territorial-loss salience and rootedness shape willingness to reclaim lost territory. Abstract accepted at MAPOR; full draft in progress.</p>
+          <h3>Structures in Our Heads: Social Identity and Party Attachments in Central and Eastern Europe</h3>
+          <p class="pub-desc">With Tade&aacute;&scaron; Cely and Lenka Hrbkov&aacute;. Using original survey data from the Czech Republic, Hungary and Lithuania (n&nbsp;=&nbsp;4,296) and an embedded experiment, we argue that under conditions of party flux and weak social ties, identification with groups is highly individualized, and these &ldquo;structures in our heads&rdquo; strongly predict the role social groups play in party attachments and partisan affect.</p>
         </li>
       </ul>
     </div>
@@ -216,21 +304,86 @@
 
   <!-- ============ TEACHING EXPERIENCE ============ -->
   <section class="teaching" id="teaching">
-    <div class="section-inner teaching-grid">
-      <div>
-        <p class="kicker">Teaching Experience</p>
-        <h2 class="section-title">Critical Perspectives on Territorial Conflict</h2>
-        <p class="section-lede">INTL_ST 395 · Northwestern University · Fall 2026</p>
-        <p>A nine-week senior seminar, meeting twice weekly, introducing undergraduates to the comparative study of territorial loss, displacement, and the politics of return — drawing directly on the case material from my own dissertation research.</p>
-      </div>
-      <div class="teaching-card">
-        <p class="teaching-card-label">Format</p>
-        <p class="teaching-card-value">9 weeks · twice-weekly seminar</p>
-        <p class="teaching-card-label">Level</p>
-        <p class="teaching-card-value">Undergraduate, senior seminar</p>
-        <p class="teaching-card-label">Cases covered</p>
-        <p class="teaching-card-value">Sudetenland · Karelia · Nagorno-Karabakh · Ukraine</p>
-      </div>
+    <div class="section-inner">
+      <p class="kicker">Teaching Experience</p>
+      <h2 class="section-title teaching-title">Critical Perspectives on Territorial Conflict</h2>
+      <p class="teaching-role">Instructor of Record</p>
+      <p class="section-lede">INTL_ST 395 &middot; Northwestern University &middot; Fall 2026, Winter 2027</p>
+      <a href="materials/syllabus-territorial-conflict.pdf" class="syllabus-link" download>
+        <span class="syllabus-link-label">Course syllabus</span>
+        <span class="syllabus-link-cta">Download PDF &rarr;</span>
+      </a>
+      <p class="teaching-body">An upper-level research seminar, meeting twice weekly. In this course, built around my own dissertation research, I introduce undergraduates to the comparative study of territorial conflict, forced displacement, and intergenerational transmission of trauma. In addition to classroom lectures and discussions, I supervise the students&rsquo; original research papers &mdash; the main outcome of the course.</p>
+
+      <h3 class="subhead">Teaching Assistant, Northwestern University</h3>
+      <ul class="ta-list">
+        <li>
+          <span class="ta-course">POLS 240 &ndash; Introduction to International Relations</span>
+          <span class="ta-terms">Winter 2025, Fall 2025</span>
+        </li>
+        <li>
+          <span class="ta-course">POLS 335 &ndash; Political Psychology</span>
+          <span class="ta-terms">Spring 2024</span>
+        </li>
+        <li>
+          <span class="ta-course">POLS 210 &ndash; Introduction to Empirical Methods</span>
+          <span class="ta-terms">Fall 2023, Winter 2024</span>
+        </li>
+      </ul>
+      <a href="materials/teaching-evaluations.pdf" class="ta-eval-link" download><span class="ta-eval-link-label">Teaching Evaluations</span><span class="ta-eval-link-cta">Download PDF &rarr;</span></a>
+    </div>
+  </section>
+
+  <!-- ============ FELLOWSHIPS & AWARDS ============ -->
+  <section class="fellowships" id="fellowships">
+    <div class="section-inner">
+      <p class="kicker">Fellowships &amp; Awards</p>
+
+      <h3 class="subhead">Awards &amp; Prizes</h3>
+      <ul class="fellowship-list">
+        <!-- TEMPLATE — copy an <li> block to add a new entry. -->
+
+        <li class="fellowship-item">
+          <h3>Doris Graber Student Paper Competition &mdash; Honorable Mention <span class="fellowship-org">(MAPOR)</span></h3>
+          <span class="fellowship-year">2025</span>
+        </li>
+        <li class="fellowship-item">
+          <h3>Jacques Rupnik Prize <span class="fellowship-org">(best paper, European University Institute)</span></h3>
+          <span class="fellowship-year">2025</span>
+        </li>
+        <li class="fellowship-item">
+          <h3>John Parker Compton Fellowship in International Relations <span class="fellowship-org">(Princeton University)</span></h3>
+          <span class="fellowship-year">2019</span>
+        </li>
+      </ul>
+
+      <h3 class="subhead">Fellowships &amp; Grants</h3>
+      <ul class="fellowship-list">
+        <li class="fellowship-item">
+          <h3>Visiting Research Fellow <span class="fellowship-org">(Migration Institute of Finland)</span></h3>
+          <span class="fellowship-year">2026</span>
+        </li>
+        <li class="fellowship-item">
+          <h3>Gerald D. Feldman Travel Grant <span class="fellowship-org">(Max Weber Stiftung)</span></h3>
+          <span class="fellowship-year">2025</span>
+        </li>
+        <li class="fellowship-item">
+          <h3>Marvin and Carol Soroos Graduate Research and Travel Award <span class="fellowship-org">(Northwestern University)</span></h3>
+          <span class="fellowship-year">2025</span>
+        </li>
+        <li class="fellowship-item">
+          <h3>Buffett Institute International Dissertation Grant <span class="fellowship-org">(Northwestern University)</span></h3>
+          <span class="fellowship-year">2025</span>
+        </li>
+        <li class="fellowship-item">
+          <h3>Buffett Institute Graduate Research Fellowship <span class="fellowship-org">(Northwestern University)</span></h3>
+          <span class="fellowship-year">2024&ndash;25</span>
+        </li>
+        <li class="fellowship-item">
+          <h3>Buffett Institute Summer Research Grant <span class="fellowship-org">(Northwestern University)</span></h3>
+          <span class="fellowship-year">2024</span>
+        </li>
+      </ul>
     </div>
   </section>
 
@@ -238,70 +391,158 @@
   <section class="engagement" id="engagement">
     <div class="section-inner">
       <p class="kicker">Public Engagement</p>
-      <h2 class="section-title">In the media</h2>
-      <p class="section-lede">Alongside the dissertation, I work as an analyst at AMO (Association for International Affairs, Prague), focused on transatlantic relations and U.S. domestic and foreign policy.</p>
+      <p class="section-lede">Outside of my academic research and writing, I appear in a variety of Czech and Slovak media channels, including the public TV and radio, offering insights into US domestic and foreign policy issues. I do so as a <a href="https://amo.cz/en/team/matej-jungwirth">Research Fellow</a> with the Prague-based AMO think tank.</p>
 
       <ul class="engagement-list">
+        
         <li class="engagement-item">
-          <span class="engagement-outlet">Czech Television (ČT24, Studio 6)</span>
+          <span class="engagement-outlet">Denník N (2026)</span>
+          <p class="engagement-title"><a href="https://dennikn.sk/5443117/vyhravaju-v-new-yorku-aj-vo-washingtone-co-chcu-demokraticki-socialisti-ktorych-trump-oznacuje-za-najvacsiu-hrozbu-pre-usa/">Vyhrávajú v New Yorku aj vo Washingtone. Čo chcú demokratickí socialisti, ktorých Trump označuje za „najväčšiu hrozbu" pre USA</a></p>
+        </li>
+        <li class="engagement-item">
+          <span class="engagement-outlet">Czech Television (ČT24, Studio 6) (2026)</span>
           <p class="engagement-title">Dohoda o příměří mezi USA a Íránem <span class="engagement-gloss">— The US–Iran ceasefire agreement</span></p>
         </li>
         <li class="engagement-item">
-          <span class="engagement-outlet">info.cz</span>
-          <p class="engagement-title">Bidenův kabinet: balancování, důraz na klima a diplomy z prestižních univerzit <span class="engagement-gloss">— Biden's cabinet: balancing, a climate focus, and Ivy League degrees</span></p>
+          <span class="engagement-outlet">The Daily Northwestern (2024)</span>
+          <p class="engagement-title"><a href="https://dailynorthwestern.com/2024/02/29/opinion/lte-a-fair-contract-for-graduate-workers-must-include-dependent-healthcare-coverage/">A Fair Contract for Graduate Workers Must Include Dependent Healthcare Coverage</a> <span class="engagement-credit">— with C. Logan and M. Standley</span></p>
         </li>
         <li class="engagement-item">
-          <span class="engagement-outlet">Heinrich Böll Stiftung Prague</span>
-          <p class="engagement-title">Joe Biden and Climate: Cause for Cautious Optimism</p>
+          <span class="engagement-outlet">Deník Referendum (2022)</span>
+          <p class="engagement-title"><a href="https://denikreferendum.cz/clanek/33594-spojene-staty-nad-propasti">Spojené státy nad propastí?</a> <span class="engagement-gloss">— The United States on the brink?</span></p>
         </li>
         <li class="engagement-item">
-          <span class="engagement-outlet">Heinrich Böll Stiftung Prague</span>
-          <p class="engagement-title">Výpadek elektrické sítě v Texasu: příčiny, poučení a důsledky pro transformaci energetického trhu v EU <span class="engagement-gloss">— The Texas power grid failure: causes, lessons, and implications for the EU energy market</span></p>
+          <span class="engagement-outlet">Heinrich Böll Stiftung Prague (2021)</span>
+          <p class="engagement-title"><a href="https://cz.boell.org/en/2021/03/19/texas-power-grid-failure-causes-lessons-learned-and-implications-eu-energy-market">Výpadek elektrické sítě v Texasu: příčiny, poučení a důsledky pro transformaci energetického trhu v EU</a> <span class="engagement-gloss">— The Texas power grid failure: causes, lessons, and implications for the EU energy market</span></p>
+        </li>
+        <li class="engagement-item">
+          <span class="engagement-outlet">Heinrich Böll Stiftung Prague (2020)</span>
+          <p class="engagement-title"><a href="https://cz.boell.org/en/2020/12/03/joe-biden-and-climate-cause-cautious-optimism">Joe Biden and Climate: Cause for Cautious Optimism</a></p>
+        </li>
+        <li class="engagement-item">
+          <span class="engagement-outlet">info.cz (2020)</span>
+          <p class="engagement-title"><a href="https://www.info.cz/nazory/bidenuv-kabinet-balancovani-duraz-na-klima-a-diplomy-z-prestiznich-univerzit">Bidenův kabinet: balancování, důraz na klima a diplomy z prestižních univerzit</a> <span class="engagement-gloss">— Biden's cabinet: balancing, a climate focus, and Ivy League degrees</span></p>
+        </li>
+        <li class="engagement-item">
+          <span class="engagement-outlet">Mercy Corps &amp; IOM (2020)</span>
+          <p class="engagement-title"><a href="https://reliefweb.int/report/nigeria/rethinking-return-lessons-colombia-liberia-and-nigeria">Rethinking Return: Lessons from Colombia, Liberia and Nigeria</a> <span class="engagement-credit">— editor</span></p>
+        </li>
+        <li class="engagement-item">
+          <span class="engagement-outlet">Journal of Public &amp; International Affairs (2019)</span>
+          <p class="engagement-title"><a href="https://jpia.princeton.edu/news/pirates-boat-people-and-bystanders-contradictions-marine-bedrock-international-human-rights">Pirates, Boat People, and Bystanders: Contradictions at the Marine Bedrock of the International Human Rights Regime</a></p>
         </li>
       </ul>
     </div>
   </section>
 
-  <!-- ============ CURRICULUM VITAE ============ -->
-  <section class="cv" id="cv">
-    <div class="section-inner cv-inner">
-      <div>
-        <p class="kicker">Curriculum Vitae</p>
-        <h2 class="section-title">Full academic record</h2>
-        <p class="section-lede">Education, publications, fieldwork, presentations, and methods training.</p>
+  <!-- ============ DOSSIER — HIDDEN (Sept 2026) ============
+       Job market materials aren't ready to be public yet; full market
+       entry is Fall 2027. Hidden via the `hidden` attribute below rather
+       than an HTML comment, because this block already contains its own
+       comments (TEMPLATE, PENDING TILE) — comments can't nest, so
+       wrapping the whole thing in one more would have silently broken
+       and left it rendering anyway. To bring this back: remove the
+       `hidden` attribute on the <section> tag below, then restore the
+       "Dossier" nav link and the "05 Job Market Dossier" guidepost tile
+       (both removed, not just hidden, so nothing links to a section
+       that doesn't render). -->
+  <section class="dossier" id="dossier" hidden>
+    <div class="section-inner">
+      <p class="kicker">Dossier</p>
+
+      <div class="dossier-grid">
+        <!-- TEMPLATE — each item links to a PDF in your site folder.
+             Swap the href for the real file name once uploaded. -->
+        <!-- PENDING TILE — a <div>, not an <a>, so a reviewer can't click
+             through to a 404. To make it live: change <div> to
+             <a href="materials/FILENAME.pdf"> (and </div> to </a>), then
+             swap the pending span for: <span class="dossier-cta">PDF →</span> -->
+        <div class="dossier-item dossier-item--pending">
+          <h3>Research Statement</h3>
+          <span class="dossier-cta dossier-cta--pending">[to be added]</span>
+        </div>
+        <a href="materials/teaching-statement.pdf" class="dossier-item">
+          <h3>Teaching Statement</h3>
+          <span class="dossier-cta">PDF →</span>
+        </a>
+        <div class="dossier-item dossier-item--pending">
+          <h3>Writing Sample</h3>
+          <span class="dossier-cta dossier-cta--pending">[to be added]</span>
+        </div>
+        <a href="materials/teaching-evaluations.pdf" class="dossier-item" download>
+          <h3>Teaching Evaluations</h3>
+          <span class="dossier-cta">PDF →</span>
+        </a>
+        <a href="materials/cv.pdf" class="dossier-item">
+          <h3>Curriculum Vitae</h3>
+          <span class="dossier-cta">PDF →</span>
+        </a>
+        <a href="#" id="downloadAll" class="dossier-item dossier-item--all">
+          <h3>Download All</h3>
+          <span class="dossier-cta" id="downloadAllCta">ZIP →</span>
+        </a>
       </div>
-      <a href="cv.pdf" class="btn btn--primary btn--large" download>Download CV (PDF)</a>
     </div>
   </section>
 
   <!-- ============ PROJECT SAUNA ============ -->
   <section class="sauna" id="sauna">
     <div class="section-inner">
-      <p class="kicker">Project Sauna</p>
-      <h2 class="section-title">A yard, a stove, no deadline</h2>
-      <p class="section-lede">A build journal, documented as it happens — starting with inspiration, and growing one dated entry at a time.</p>
+      <p class="kicker">Sauna</p>
 
       <div class="sauna-journal">
 
-        <!-- ================================================================
-             ENTRY TEMPLATE — copy this whole <article> block for each new
-             entry, then edit the date, title, text, and image filename.
-             Newest entries go at the TOP of this list.
-             ================================================================
-        <article class="sauna-entry">
-          <p class="sauna-date">MONTH YYYY</p>
-          <h3 class="sauna-entry-title">Entry title</h3>
-          <p class="sauna-entry-text">A couple of sentences on progress.</p>
-          <img src="images/sauna/your-photo.jpg" alt="" class="sauna-entry-photo">
-        </article>
-        ================================================================= -->
-
-        <article class="sauna-entry">
+        <!-- ============================================================
+             LATEST ENTRY — the only one shown open. When you write a new
+             entry: (1) move everything currently in here down into the
+             archive below, using the COMPACT TEMPLATE, as the newest item
+             at the TOP of that list; (2) replace this block with the new
+             entry. There is only ever ONE entry here at a time.
+             ============================================================ -->
+        <article class="sauna-entry sauna-latest">
           <p class="sauna-date">Inspiration</p>
-          <h3 class="sauna-entry-title">The vision</h3>
-          <p class="sauna-entry-text">Before any lumber is bought: a plan for a proper yard sauna, inspired in part by the Finnish landscape from fieldwork — the lake, the light, the ritual of it. This entry will grow into a full build log as the project moves from planning to foundation to first löyly.</p>
-          <img src="images/hero_A.jpg" alt="Inspiration: a lake in Finland" class="sauna-entry-photo">
+          <h3 class="sauna-entry-title">The Dream of Löyly</h3>
+          <p class="sauna-entry-text">One of my foremost non-academic pursuits is the planning and building of a Finnish sauna. My yearning for löyly (sauna steam) originates in the two years I spent with my family in Helsinki, Finland, where sauna is not a luxury but a fundamental human right and, as many Finns would passionately argue, one of the foremost reasons why Finland was relatively unaffected during the COVID-19 pandemic.</p>
+          <p class="sauna-entry-text">I was originally planning on purchasing a pre-fab kit but in the end decided that I prefer the full freedom in terms of design and insulation choices that a full build offers. However, with great power comes great responsibility that I do not take lightly &mdash; cue hours spent perusing r/Sauna, Trumpkin's sauna notes and Lassi Liikkanen's excellent books on sauna design.</p>
+          <p class="sauna-entry-text">The goal for this sauna is to not only create a space where my family can unwind and relax but where we can also invite in our friends, family and neighbors for a regular session of heat and cold exchange; a much welcome respite in the thick of Midwestern winters. Thus, this section will serve as a building log with regular text and photo updates as the project advances.</p>
+          <p class="sauna-entry-text">Hyvä löyly!</p>
+          <div class="sauna-entry-photos">
+            <img src="images/sauna-forest-cabin.jpg" alt="Traditional red sauna cabin in a pine forest" class="sauna-photo">
+            <img src="images/sauna-lakeshore.jpg" alt="Rustic log sauna on a lakeshore" class="sauna-photo">
+            <img src="images/sauna-green-roof.jpg" alt="Sauna with a green roof, under construction" class="sauna-photo">
+            <img src="images/sauna-lake-dock.jpg" alt="Wooden dock leading into a lake, framed by trees" class="sauna-photo">
+          </div>
         </article>
+
+        <!-- ============================================================
+             ARCHIVE — every entry that's no longer the latest, collapsed
+             behind a toggle so the page doesn't grow with every post.
+             Update the count in .sauna-archive-count by hand when you
+             add or remove entries. Remove the whole <details> block
+             if the list is empty (nothing archived yet).
+
+             COMPACT ENTRY TEMPLATE — copy this whole <article> for each
+             archived entry, newest at the TOP of the list:
+
+        <article class="sauna-archive-entry">
+          <div class="sauna-archive-entry-head">
+            <p class="sauna-date">MONTH YYYY</p>
+            <h4 class="sauna-archive-entry-title">Entry title</h4>
+          </div>
+          <p class="sauna-archive-entry-text">One or two sentences.</p>
+          <div class="sauna-archive-entry-photos">
+            <img src="images/sauna-your-photo.jpg" alt="Describe the photo here" class="sauna-archive-photo">
+          </div>
+        </article>
+             ============================================================ -->
+        <!--
+        <details class="sauna-archive">
+          <summary class="sauna-archive-toggle">Past entries (<span class="sauna-archive-count">0</span>)</summary>
+          <div class="sauna-archive-list">
+
+          </div>
+        </details>
+        -->
 
       </div>
     </div>
@@ -311,14 +552,14 @@
   <section class="contact" id="contact">
     <div class="section-inner contact-inner">
       <p class="kicker kicker--onlight">Contact</p>
-      <h2 class="section-title section-title--onlight">Let's talk</h2>
-      <p class="contact-lede">Department of Political Science, Northwestern University</p>
+      <p class="contact-name">Matěj Jungwirth</p>
+      <p class="contact-lede">Department of Political Science<br>Northwestern University</p>
       <div class="contact-links">
         <a href="mailto:matej@u.northwestern.edu" class="contact-link">Email</a>
-        <a href="#" class="contact-link">BlueSky</a>
-        <a href="#" class="contact-link">Google Scholar</a>
-        <a href="#" class="contact-link">OSF</a>
-        <a href="https://amo.cz/lide/matej-jungwirth" class="contact-link">AMO Profile</a>
+        <a href="https://bsky.app/profile/matejjung.bsky.social" class="contact-link">Bluesky</a>
+        <a href="https://scholar.google.com/citations?user=qbNzBMsAAAAJ&amp;hl=en" class="contact-link">Google Scholar</a>
+        <a href="https://osf.io/3da76/" class="contact-link">OSF</a>
+        <a href="https://amo.cz/en/team/matej-jungwirth" class="contact-link">AMO Profile</a>
       </div>
     </div>
   </section>
@@ -330,5 +571,95 @@
 </footer>
 
 <script src="script.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+// Download All: bundles whichever dossier PDFs are live right now.
+//
+// Two cases have to work:
+//   1. Deployed site — tile hrefs are relative paths ("materials/cv.pdf"),
+//      so each one is fetched over the network.
+//   2. preview.html  — build_preview.py has inlined every PDF as a
+//      data: URI, so the bytes are already in the page and decoded locally.
+//
+// Pending tiles are plain divs with no href, so they're skipped automatically
+// and this keeps working as real files get added — no code change needed.
+(function(){
+  var btn = document.getElementById('downloadAll');
+  if (!btn) return;
+  var cta = document.getElementById('downloadAllCta');
+
+  function slug(s){
+    return s.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  }
+
+  function reset(msg){
+    cta.textContent = msg;
+    setTimeout(function(){ cta.textContent = 'ZIP →'; }, 2500);
+  }
+
+  btn.addEventListener('click', function(e){
+    e.preventDefault();
+    if (typeof JSZip === 'undefined'){
+      reset('OFFLINE — RETRY');
+      return;
+    }
+
+    // Collect every dossier tile that actually points at a document.
+    var jobs = [];
+    document.querySelectorAll('.dossier-item').forEach(function(t){
+      if (t === btn) return;
+      var href = t.getAttribute('href');
+      if (!href || href === '#') return;
+      var h3 = t.querySelector('h3');
+      jobs.push({ href: href, name: slug(h3 ? h3.textContent : 'document') + '.pdf' });
+    });
+
+    if (jobs.length === 0){
+      reset('NOTHING YET');
+      return;
+    }
+
+    cta.textContent = 'BUILDING…';
+    var zip = new JSZip();
+
+    Promise.all(jobs.map(function(job){
+      // Inlined preview: decode straight from the data URI, no network.
+      if (job.href.indexOf('data:application/pdf;base64,') === 0){
+        zip.file(job.name, job.href.split(',')[1], {base64:true});
+        return Promise.resolve(true);
+      }
+      // Deployed site: fetch the file. A single 404 shouldn't sink the
+      // whole zip, so a failed file resolves false and is just left out.
+      return fetch(job.href).then(function(res){
+        if (!res.ok) return false;
+        return res.blob().then(function(blob){
+          zip.file(job.name, blob);
+          return true;
+        });
+      }).catch(function(){ return false; });
+    })).then(function(results){
+      var ok = results.filter(Boolean).length;
+      if (ok === 0){
+        reset('FAILED — RETRY');
+        return;
+      }
+      return zip.generateAsync({type:'blob'}).then(function(blob){
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        a.download = 'jungwirth-dossier.zip';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        cta.textContent = 'ZIP →';
+      });
+    }).catch(function(){
+      reset('FAILED — RETRY');
+    });
+  });
+})();
+</script>
 </body>
 </html>
